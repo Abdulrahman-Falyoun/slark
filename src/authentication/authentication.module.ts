@@ -4,13 +4,18 @@ import {PassportModule} from '@nestjs/passport';
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigService} from "../config/config.service";
 import {ConfigModule} from "../config/config.module";
+import {JwtAuthGuard} from "./jwt-auth.guard";
+import {JwtStrategy} from "./jwt-strategy";
+import {UserModule} from "../user/user.module";
+import {UserService} from "../user/user.service";
 
 const factoryMethod = async (configService: ConfigService) => {
     return {
         secret: configService.get("JWTSECRETKey"),
-        signOptions: {expiresIn: '60s'},
+        signOptions: {expiresIn: configService.get('EXPIRES_IN')}
     };
 };
+
 @Global()
 @Module({
     imports: [
@@ -22,10 +27,14 @@ const factoryMethod = async (configService: ConfigService) => {
         }),
     ],
     providers: [
-        AuthenticationService
+        AuthenticationService,
+        JwtAuthGuard,
+        JwtStrategy,
+        UserService
     ],
     exports: [
-        AuthenticationService
+        AuthenticationService,
+        JwtAuthGuard
     ]
 })
 export class AuthenticationModule {

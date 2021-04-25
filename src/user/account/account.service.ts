@@ -8,7 +8,6 @@ import {AuthenticationService} from "../../authentication/authentication.service
 @Injectable()
 export class AccountService {
     constructor(private userService: UserService, private authenticationService: AuthenticationService) {
-
     }
 
 
