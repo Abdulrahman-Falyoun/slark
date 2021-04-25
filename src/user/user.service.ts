@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SCHEMA_NAME, User } from './user';
+import { SCHEMA_NAME, User } from './entities/user';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { PaginationQueryDto } from './dtos/pagination-query.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(SCHEMA_NAME) private readonly userModel: Model<User>) {
+  constructor(@InjectModel(SCHEMA_NAME) private readonly userModel?: Model<User>) {
   }
 
   public async findAll(
@@ -24,7 +24,10 @@ export class UserService {
 
   async create(createCatDto: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(createCatDto);
-    return createdUser.save();
+    const savedUser = await createdUser.save();
+    savedUser['password'] = undefined;
+    savedUser['__v'] = undefined;
+    return savedUser;
   }
 
   public async findOne(userId: string): Promise<User> {

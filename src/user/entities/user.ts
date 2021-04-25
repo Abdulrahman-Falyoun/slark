@@ -6,7 +6,7 @@ export class User extends Document {
   @Prop({ unique: true }) name: string;
   @Prop({ unique: true }) email: string;
   @Prop() password: string;
-  @Prop() verified: boolean;
+  @Prop() verified: boolean = false;
   @Prop() createdAt: Date;
 }
 

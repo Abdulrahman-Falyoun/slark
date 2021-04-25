@@ -11,7 +11,7 @@ import { UserModule } from './user/user.module';
     MongooseInitializerModule,
     MailModule,
     AuthenticationModule,
-    UserModule
+    UserModule,
   ],
 
 })
