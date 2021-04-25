@@ -14,7 +14,7 @@ const factoryMethod = async (configService: ConfigService) => {
 @Module({
   imports: [
     MongooseModule.forRootAsync({
-      imports: [ConfigModule.register({ folder: 'config' })],
+      imports: [ConfigModule],
       useFactory: factoryMethod,
       inject: [ConfigService],
     }),

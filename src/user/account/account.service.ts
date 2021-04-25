@@ -3,10 +3,11 @@ import {UserService} from "../user.service";
 import {SignupDto} from "./dto/signup.dto";
 import {LoginDto} from "./dto/login.dto";
 import * as bcrypt from 'bcrypt';
+import {AuthenticationService} from "../../authentication/authentication.service";
 
 @Injectable()
 export class AccountService {
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private authenticationService: AuthenticationService) {
 
     }
 
@@ -23,9 +24,12 @@ export class AccountService {
                 message: 'Password is not correct'
             }
         }
-        user.password = undefined;
-        user.__v = undefined;
-        return user;
+        return {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            token: `Bearer ${this.authenticationService.generateAccessToken(user)}`
+        };
     }
 
 }
