@@ -67,7 +67,7 @@ export class AccountService {
                 to: user.email,
                 subject: "Account Verification Link",
                 text: "and easy to do anywhere, even with Node.js",
-                html: `<pre>Hello ${user.name}\n\nPlease verify your account by clicking the link:\n<a href="https://slark-backend.herokuapp.com/account/verify/${user.email}/${token}" target="_blank">Confirm email</a>\n\nThank You!\n</pre>`,
+                html: `<pre>Hello ${user.name}\n\nPlease verify your account by clicking the link:\n<a href="http://localhost:3000/account/verify/${user.email}/${token}" target="_blank">Confirm email</a>\n\nThank You!\n</pre>`,
             });
     }
 

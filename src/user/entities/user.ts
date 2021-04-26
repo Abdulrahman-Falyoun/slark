@@ -9,7 +9,7 @@ export class User extends Document {
     @Prop({unique: true}) name: string;
     @Prop({unique: true}) email: string;
     @Prop() password: string;
-    @Prop() verified: boolean = false;
+    @Prop({ default: false }) verified: boolean;
     @Prop() createdAt: Date;
 
 
@@ -20,4 +20,3 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-export const USER_SCHEMA_NAME = 'user';

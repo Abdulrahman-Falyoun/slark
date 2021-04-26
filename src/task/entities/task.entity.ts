@@ -1,8 +1,8 @@
 import {Document, Types} from "mongoose";
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {User, USER_SCHEMA_NAME} from "../../user/entities/user";
+import {User} from "../../user/entities/user";
 import {List} from "../../list/entities/list.entity";
-import {SLARK_LIST, SLARK_TASK} from "../../utils/schema-names";
+import {SLARK_LIST, SLARK_TASK, SLARK_USER} from "../../utils/schema-names";
 
 export const TASK_SCHEMA_NAME = 'task';
 
@@ -12,7 +12,7 @@ export class Task extends Document {
     @Prop() createdAt: Date;
     @Prop() description: string;
     @Prop({type: [{type: Types.ObjectId, ref: SLARK_TASK}]}) _subtasks: Task[];
-    @Prop({type: [{type: Types.ObjectId, ref: USER_SCHEMA_NAME}]}) _assignedUsers: User[];
+    @Prop({type: [{type: Types.ObjectId, ref: SLARK_USER}]}) _assignedUsers: User[];
     @Prop({type: Types.ObjectId, ref: SLARK_LIST}) _list: List;
 }
 

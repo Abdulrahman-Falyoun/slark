@@ -3,11 +3,12 @@ import {AccountService} from './account.service';
 import {AccountController} from './account.controller';
 import {UserService} from "../user.service";
 import {MongooseModule} from "@nestjs/mongoose";
-import {USER_SCHEMA_NAME, UserSchema} from "../entities/user";
+import {UserSchema} from "../entities/user";
+import {SLARK_USER} from "../../utils/schema-names";
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{name: USER_SCHEMA_NAME, schema: UserSchema}]),
+        MongooseModule.forFeature([{name: SLARK_USER, schema: UserSchema}]),
     ],
     controllers: [AccountController],
     providers: [

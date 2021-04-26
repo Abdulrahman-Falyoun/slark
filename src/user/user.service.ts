@@ -1,7 +1,7 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
-import {USER_SCHEMA_NAME, User} from './entities/user';
+import {User} from './entities/user';
 import {CreateUserDto} from './dtos/create-user.dto';
 import {UpdateUserDto} from './dtos/update-user.dto';
 import {PaginationQueryDto} from './dtos/pagination-query.dto';
@@ -11,11 +11,12 @@ import {RoleService} from "../role/role.service";
 import {NORMAL_USER} from "../utils/system-roles";
 import {AuthenticationService} from "../authentication/authentication.service";
 import {mailService} from "../services/mail.service";
+import {SLARK_USER} from "../utils/schema-names";
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(USER_SCHEMA_NAME) private readonly userModel: Model<User>,
+        @InjectModel(SLARK_USER) private readonly userModel: Model<User>,
         private roleService: RoleService,
         private authenticationService: AuthenticationService
     ) {
@@ -42,37 +43,37 @@ export class UserService {
                     "Could not grant a role, kindly contact us to solve this problem",
             };
         }
-       try {
-           const createdUser = new this.userModel({
-               ...createUserDto,
-               password: hash,
-               _roles: [userRole],
-           });
-           const savedUser = await createdUser.save();
-           savedUser['password'] = undefined;
-           savedUser['__v'] = undefined;
+        try {
+            const createdUser = new this.userModel({
+                ...createUserDto,
+                password: hash,
+                _roles: [userRole],
+            });
+            const savedUser = await createdUser.save();
+            savedUser['password'] = undefined;
+            savedUser['__v'] = undefined;
 
-           const token = await this.authenticationService.generateAccessToken({
-               id: savedUser.id,
-               email: savedUser.email,
-           });
-           return await mailService.sendEmailNodeMailer(
-               savedUser,
-               token,
-               {
-                   from: "no-reply@slark.com",
-                   to: savedUser.email,
-                   subject: "Account Verification Link",
-                   text: "and easy to do anywhere, even with Node.js",
-                   html: `<pre>Hello ${savedUser.name}\n\nPlease verify your account by clicking the link:\n<a href="https://slark-backend.herokuapp.com/account/verify/${savedUser.email}/${token}" target="_blank">Confirm email</a>\n\nThank You!\n</pre>`,
-               });
-       } catch (e) {
-           console.log("createNewUser [user.service.ts] e: ", e);
-           return {
-               code: operationsCodes.DATABASE_ERROR,
-               error: e.messagee || e,
-           };
-       }
+            const token = await this.authenticationService.generateAccessToken({
+                id: savedUser.id,
+                email: savedUser.email,
+            });
+            return await mailService.sendEmailNodeMailer(
+                savedUser,
+                token,
+                {
+                    from: "no-reply@slark.com",
+                    to: savedUser.email,
+                    subject: "Account Verification Link",
+                    text: "and easy to do anywhere, even with Node.js",
+                    html: `<pre>Hello ${savedUser.name}\n\nPlease verify your account by clicking the link:\n<a href="http://localhost:3000/account/verify/${savedUser.email}/${token}" target="_blank">Confirm email</a>\n\nThank You!\n</pre>`,
+                });
+        } catch (e) {
+            console.log("createNewUser [user.service.ts] e: ", e);
+            return {
+                code: operationsCodes.DATABASE_ERROR,
+                error: e.messagee || e,
+            };
+        }
     }
 
     public async findOne(userId?: string, email?: string): Promise<User> {

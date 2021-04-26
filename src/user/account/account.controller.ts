@@ -38,7 +38,7 @@ export class AccountController {
     async verifyAccount(@Res() res, @Param('email') email: string, @Param('token') token: string) {
         await this.accountService.confirmEmail(email, token);
         const verificationPage = await FileHandler.readFileAsync(
-            "static/pages/verification-page.html"
+            "src/public/pages/verification-page.html"
         );
         res.writeHead(200, {
             "Content-Type": "text/html",

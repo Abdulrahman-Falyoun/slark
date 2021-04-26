@@ -1,11 +1,12 @@
 import {FilterQuery, UpdateQuery, QueryOptions, Model} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
-import {User, USER_SCHEMA_NAME} from "./entities/user";
+import {User} from "./entities/user";
 import {Injectable} from "@nestjs/common";
+import {SLARK_USER} from "../utils/schema-names";
 
 @Injectable()
 export class UserUtilsService {
-    constructor(@InjectModel(USER_SCHEMA_NAME) private readonly userModel?: Model<User>) {
+    constructor(@InjectModel(SLARK_USER) private readonly userModel?: Model<User>) {
     }
 
     async getUserById(id) {
