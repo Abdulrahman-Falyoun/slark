@@ -1,21 +1,17 @@
 import {
     Controller,
-    Get,
     Post,
     Body,
-    Patch,
     Param,
-    Delete,
     Res,
     ValidationPipe,
-    UsePipes,
-    UseGuards, Req
+    UsePipes, Get,
 } from '@nestjs/common';
 import {AccountService} from './account.service';
 import {SignupDto} from "./dto/signup.dto";
 import {LoginDto} from "./dto/login.dto";
-import {AuthGuard} from "@nestjs/passport";
-import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
+import {FileHandler} from "../../utils/file-system-handler";
+import {operationsCodes} from "../../utils/operation-codes";
 
 @Controller('account')
 export class AccountController {
@@ -37,8 +33,25 @@ export class AccountController {
         return res.status(200).json(user);
     }
 
-    @Post('/testy')
-    @UseGuards(JwtAuthGuard)
-    testy(@Req() req) {
+
+    @Get('/verify/:email/:token')
+    async verifyAccount(@Res() res, @Param('email') email: string, @Param('token') token: string) {
+        await this.accountService.confirmEmail(email, token);
+        const verificationPage = await FileHandler.readFileAsync(
+            "static/pages/verification-page.html"
+        );
+        res.writeHead(200, {
+            "Content-Type": "text/html",
+        });
+        res.write(verificationPage);
+        res.end();
+    }
+
+    @Get('/reactivate/:email')
+    async resendActivationLink(@Param('email') email: string, @Res() res) {
+        const response = await this.accountService.resendActivationLink(email);
+        return res
+            .status(operationsCodes.getResponseCode(response.code))
+            .json(response);
     }
 }

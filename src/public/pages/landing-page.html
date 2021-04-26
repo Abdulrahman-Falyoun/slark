@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coming Soon</title>
+    <!-- <link rel="icon" href="coming-soon-assets/favicon.ico" /> -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&amp;display=swap"
+            rel="stylesheet"
+    />
+    <script>
+        function onInputChanged(value) {
+            // TODO
+            // Store email in db to get notified
+        }
+        (() => {
+            // Set the date we're counting down to
+            const countDownDate = new Date("June 5, 2021 15:37:25").getTime();
+
+            // Update the count down every 1 second
+            const countdownfunction = setInterval(() => {
+                // Get todays date and time
+                const now = new Date().getTime();
+
+                // Find the distance between now an the count down date
+                const distance = countDownDate - now;
+
+                // Time calculations for days, hours, minutes and seconds
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(
+                    (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                );
+                const minutes = Math.floor(
+                    (distance % (1000 * 60 * 60)) / (1000 * 60)
+                );
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Output the result in an element with id="timer"
+                document.getElementById("days-timer").innerHTML = days;
+                document.getElementById("hrs-timer").innerHTML = hours;
+                document.getElementById("mins-timer").innerHTML = minutes;
+                document.getElementById("secs-timer").innerHTML = seconds;
+
+                // If the count down is over, write some text
+                if (distance < 0) {
+                    clearInterval(countdownfunction);
+                    document.getElementById("timer").innerHTML = "EXPIRED";
+                }
+            }, 1000);
+        })();
+    </script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+        .coming-soon-wrapper {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        .coming-soon-body {
+            margin-right: 5rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-direction: row-reverse;
+            width: 100%;
+            height: 100%;
+        }
+        .bg-img-wrapper {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: -1;
+        }
+        .bg-img-wrapper .main-img {
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            background-image: url(../assets/bg.png);
+        }
+
+        @media only screen and (max-width: 600px) {
+            .bg-img-wrapper .main-img {
+                background-size: cover;
+                background-position: center;
+                background-image: url(../assets/bg-mobile.png);
+            }
+            .body-content {
+                width: 100% !important;
+                height: 100% !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                margin-top: 3rem;
+            }
+            .coming-soon-body {
+                margin: 0;
+            }
+            .slark-title {
+                position: fixed !important;
+                text-align: right !important;
+                font-size: 2rem !important;
+                width: 90% !important;
+            }
+            .slark-footer {
+                padding-bottom: 0.5rem;
+                position: fixed;
+                padding-left: .5rem;
+                left: 0;
+                bottom: 0;
+            }
+            .subscribe-input {
+                width: 90% !important;
+                font-size: 0.8rem !important;
+            }
+            .coming-soon-h1 {
+                font-size: 1.5rem !important;
+            }
+            .construction-phrase {
+                font-size: 0.6rem !important;
+            }
+        }
+        .body-content {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            height: 60%;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .subscribe-input {
+            margin-top: 4rem;
+            width: 70%;
+            background-color: #fff;
+            height: 3rem;
+            border-color: transparent;
+            border-radius: 0.3rem;
+            font-size: 1.2rem;
+        }
+        .subscribe-input:focus,
+        .subscribe-input:active {
+            border-color: transparent;
+            outline: none;
+        }
+        .coming-soon-h1 {
+            font-size: 4rem;
+            font-family: Aviliator;
+            letter-spacing: 0.4rem;
+            width: 100%;
+            text-align: center;
+        }
+        .construction-phrase {
+            font-family: "Poppins", sans-serif;
+            color: #8c96a0;
+            font-weight: bold;
+            letter-spacing: 0.2rem;
+            width: 90%;
+            text-align: center;
+        }
+
+        @font-face {
+            font-family: Aviliator;
+            src: url(../assets/Aviliator.ttf);
+        }
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+        }
+        .timer-wrapper {
+            font-family: "Poppins", sans-serif;
+            letter-spacing: 0.1rem;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            width: 100%;
+            font-weight: bold;
+            color: #8c96a0;
+            margin-top: 4rem;
+        }
+        .timer-wrapper p {
+            margin: 0;
+            text-align: center;
+        }
+        .slark-title {
+            text-align: left;
+            font-size: 3rem;
+            font-weight: bold;
+            width: 80%;
+            flex: 1 1 auto;
+        }
+        .slark-footer {
+            text-align: left;
+            width: 80%;
+            flex: 1 1 auto;
+            padding-bottom: 1rem;
+        }
+        #days-timer,
+        #hrs-timer,
+        #mins-timer,
+        #secs-timer {
+            color: #000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-img-wrapper">
+    <div class="main-img"></div>
+</div>
+<div class="coming-soon-wrapper">
+    <div class="slark-title">slark</div>
+    <div class="coming-soon-body">
+        <div class="body-content">
+            <h1 class="coming-soon-h1">We're coming soon</h1>
+            <p class="construction-phrase">
+                Our website is under construction. We'll be here soon with our new
+                awesome site.
+            </p>
+            <div class="timer-wrapper">
+                <div class="flex-column">
+                    <p id="days-timer"></p>
+                    <p>DAYS</p>
+                </div>
+                <div class="flex-column">
+                    <p id="hrs-timer"></p>
+                    <p>HOURS</p>
+                </div>
+                <span class="flex-column">
+              <p id="mins-timer"></p>
+              <p>MINUTES</p>
+            </span>
+                <span class="flex-column">
+              <p id="secs-timer"></p>
+              <p>SECONDS</p>
+            </span>
+            </div>
+            <!-- <p id="timer" style="font-size: 30px"></p> -->
+            <!--<input-->
+            <!--  class="subscribe-input"-->
+            <!--  type="text"-->
+            <!--  name="subscribeInput"-->
+            <!--  value=""-->
+            <!--  placeholder="Enter your email address"-->
+            <!--  onchange="onInputChanged(this.value)"-->
+            <!--/>-->
+        </div>
+    </div>
+    <div class="slark-footer">Powered by Slark <span>&#169;</span> 2021</div>
+</div>
+</body>
+</html>
