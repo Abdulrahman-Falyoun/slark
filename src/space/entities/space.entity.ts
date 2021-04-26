@@ -1,13 +1,13 @@
 import {Prop, SchemaFactory} from "@nestjs/mongoose";
 import {Document, Types} from "mongoose";
-import {Workspace} from "../../workspace/entities/workspace.entity";
+import {Workspace, WORKSPACE_SCHEMA_NAME} from "../../workspace/entities/workspace.entity";
 import {List} from "../../list/entities/list.entity";
 
 export class Space extends Document {
     @Prop({unique: true}) name: string;
     @Prop({type: [{type: Types.ObjectId, ref: 'list'}]}) lists: List[];
-    @Prop({type: Types.ObjectId, ref: 'workspace'}) workspace: Workspace;
+    @Prop({type: Types.ObjectId, ref: WORKSPACE_SCHEMA_NAME}) workspace: Workspace;
 }
 
 export const SpaceSchema = SchemaFactory.createForClass(Space);
-export const SCHEMA_NAME = 'space';
+export const SPACE_SCHEMA_NAME = 'space';

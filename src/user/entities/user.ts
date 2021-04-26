@@ -1,6 +1,6 @@
 import {Schema, Prop, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import {Workspace} from "../../workspace/entities/workspace.entity";
+import {Workspace, WORKSPACE_SCHEMA_NAME} from "../../workspace/entities/workspace.entity";
 
 @Schema()
 export class User extends Document {
@@ -11,9 +11,9 @@ export class User extends Document {
     @Prop() createdAt: Date;
 
 
-    @Prop({type: [{type: Types.ObjectId, ref: 'workspace'}]})
+    @Prop({type: [{type: Types.ObjectId, ref: WORKSPACE_SCHEMA_NAME}]})
     workspaces: Workspace[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-export const SCHEMA_NAME = 'user';
+export const USER_SCHEMA_NAME = 'user';

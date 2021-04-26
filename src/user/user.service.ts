@@ -1,7 +1,7 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
-import {SCHEMA_NAME, User} from './entities/user';
+import {USER_SCHEMA_NAME, User} from './entities/user';
 import {CreateUserDto} from './dtos/create-user.dto';
 import {UpdateUserDto} from './dtos/update-user.dto';
 import {PaginationQueryDto} from './dtos/pagination-query.dto';
@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(SCHEMA_NAME) private readonly userModel?: Model<User>) {
+    constructor(@InjectModel(USER_SCHEMA_NAME) private readonly userModel?: Model<User>) {
     }
 
     public async findAll(
