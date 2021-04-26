@@ -1,6 +1,4 @@
 import {Injectable} from '@nestjs/common';
-import {CreateRoleDto} from './dto/create-role.dto';
-import {UpdateRoleDto} from './dto/update-role.dto';
 import {User} from "../user/entities/user";
 import {Model, SaveOptions} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";

@@ -4,7 +4,7 @@ import {Document, Types} from "mongoose";
 
 @Schema()
 export class Role extends Document {
-    @Prop({unique: true}) name: string;
+    @Prop() name: string;
     @Prop() number: number;
     @Prop() targetId: string;
 }
