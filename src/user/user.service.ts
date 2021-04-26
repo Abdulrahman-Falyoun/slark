@@ -1,6 +1,6 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model} from 'mongoose';
+import {Model, QueryOptions} from 'mongoose';
 import {User} from './entities/user';
 import {CreateUserDto} from './dtos/create-user.dto';
 import {UpdateUserDto} from './dtos/update-user.dto';
@@ -12,13 +12,15 @@ import {NORMAL_USER} from "../utils/system-roles";
 import {AuthenticationService} from "../authentication/authentication.service";
 import {mailService} from "../services/mail.service";
 import {SLARK_USER} from "../utils/schema-names";
+import {WorkspaceService} from "../workspace/workspace.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel(SLARK_USER) private readonly userModel: Model<User>,
         private roleService: RoleService,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService,
+        private workspaceService: WorkspaceService
     ) {
     }
 
@@ -118,5 +120,61 @@ export class UserService {
         return this.userModel.findByIdAndRemove(
             userId,
         ).select({name: 1, email: 1});
+    }
+
+
+    async updateUser(id, updateDoc, opts?: QueryOptions) {
+        return await this.userModel
+            .updateOne({ _id: id }, { $set: updateDoc }, opts)
+            .then((updateResponse) => updateResponse)
+            .catch((updateUserDBError) => {
+                console.log("updateUserDBError confirmEmail: ", updateUserDBError);
+                return null;
+            });
+    }
+    async updateUseByRef(user, updatedDoc) {
+        user
+            .updateOne({ _id: user.db.id }, { $set: updatedDoc })
+            .then((updateResponse) => updateResponse)
+            .catch((updateUserDBError) => {
+                console.log("updateUserDBError confirmEmail: ", updateUserDBError);
+                return null;
+            });
+    }
+
+    async getAllInWorkspace(workspaceId) {
+        if (!workspaceId) {
+            return {
+                code: operationsCodes.MISSING_DATA,
+                message: "Please provide a valid workspace ID: recieved " + workspaceId,
+            };
+        }
+
+        try {
+            const p = await this.workspaceService.findWorkspaceById(workspaceId);
+            if (!p) {
+                return {
+                    code: operationsCodes.UNAVAILABLE_RESOURCE,
+                    message: `Workspace with id: ${workspaceId} does not exist`,
+                };
+            }
+
+            const users: Array<User> = await this.userModel
+                .find({ _id: { $in: p._users } })
+                .select({ name: 1, email: 1 });
+
+            return {
+                code: operationsCodes.SUCCESS,
+                users,
+                message: "Retrieving users is done",
+            };
+        } catch (e) {
+            console.log("ERROR [user.service.ts]: ", e.message || e);
+            return {
+                code: operationsCodes.DATABASE_ERROR,
+                message: "Retrieving users has failed",
+                e,
+            };
+        }
     }
 }

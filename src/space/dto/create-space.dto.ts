@@ -9,5 +9,5 @@ export class CreateSpaceDto {
 
     @IsString()
     @IsNotEmpty()
-    readonly workspace: Schema.Types.ObjectId;
+    readonly _workspace: Schema.Types.ObjectId;
 }

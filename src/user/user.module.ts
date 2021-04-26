@@ -17,7 +17,8 @@ import {SLARK_USER} from "../utils/schema-names";
     controllers: [UserController],
     exports: [
         MongooseModule.forFeature([{name: SLARK_USER, schema: UserSchema}]),
-        UserUtilsService
+        UserUtilsService,
+        UserService
     ]
 })
 export class UserModule {
