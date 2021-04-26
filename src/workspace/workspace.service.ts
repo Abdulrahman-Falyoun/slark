@@ -62,7 +62,7 @@ export class WorkspaceService {
             if (!id) {
                 return {
                     code: operationsCodes.MISSING_DATA,
-                    message: `You should provide a vaild workspace ID, recieved: ${id}`
+                    message: `You should provide a valid workspace ID, received: ${id}`
                 }
             }
             const hasRole = this.roleService.hasRoleOverTarget(user, id, WORKSPACE_OWNER);

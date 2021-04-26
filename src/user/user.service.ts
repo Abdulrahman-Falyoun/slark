@@ -84,11 +84,12 @@ export class UserService {
         if (userId) {
             user = await this.userModel
                 .findById({_id: userId})
+                .populate("_roles")
                 .exec();
         } else {
             user = await this.userModel.findOne({
                 email: email
-            });
+            }).populate("_roles");
         }
         if (!user) {
             throw new NotFoundException(`User #${email || userId} not found`);
