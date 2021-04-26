@@ -169,7 +169,7 @@ export class WorkspaceService {
         if (!workspaceId || !email || !token) {
             return {
                 code: operationsCodes.MISSING_DATA,
-                message: `There're some required fields, (workspaceId, email, token) but received -> (${workspaceId}, ${email}, ${token})`
+                message: `Therefore some required fields, (workspaceId, email, token) but received -> (${workspaceId}, ${email}, ${token})`
             };
         }
         const user: User = await this.userUtilsService.getUserByEmail(email, false);
