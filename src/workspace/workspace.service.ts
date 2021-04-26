@@ -144,7 +144,7 @@ export class WorkspaceService {
                     <pre>
                         Hello ${user.name}\n\n
                         ${sender.name} Sent you an invitation request to join ${workspaceName} workspace:\n
-                    <a href="http://slark-backend.herokuapp.com/public/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
+                    <a href="http://localhost:3000/workspace/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
                         Accept invitation
                     </a>\n\nThank You!\n
                     </pre>`,

@@ -19,12 +19,12 @@ import {operationsCodes} from "../utils/operation-codes";
 import {JwtAuthGuard} from "../authentication/jwt-auth.guard";
 
 @Controller('workspace')
-@UseGuards(JwtAuthGuard)
 export class WorkspaceController {
     constructor(private readonly workspaceService: WorkspaceService) {
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
     @UsePipes(ValidationPipe)
     create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
         return this.workspaceService.createWorkspace(req.user, createWorkspaceDto.name);
@@ -32,6 +32,7 @@ export class WorkspaceController {
 
 
     @Delete()
+    @UseGuards(JwtAuthGuard)
     async removeWorkspace(@Req() req, @Res() res) {
         const response = await this.workspaceService.removeWorkspace(req?.body?.id, req.user);
         return res
@@ -41,6 +42,7 @@ export class WorkspaceController {
 
 
     @Get('/:id')
+    @UseGuards(JwtAuthGuard)
     async getWorkspaceDetails(@Param('id') id: string, @Res() res) {
         const response = await this.workspaceService.getWorkspaceDetails(id);
         return res
@@ -49,6 +51,7 @@ export class WorkspaceController {
     }
 
     @Post('/invite-user')
+    @UseGuards(JwtAuthGuard)
     async inviteUserToWorkspace(@Req() req, @Res() res) {
         const response = await this.workspaceService.inviteUserToWorkspace(
             req.user,
@@ -60,6 +63,7 @@ export class WorkspaceController {
     }
 
     @Delete('/remove-user')
+    @UseGuards(JwtAuthGuard)
     async removeUserFromWorkspace(@Req() req, @Res() res) {
         const response = await this.workspaceService.removeUserFromWorkspace(req.user, req.body.workspaceId, req.body.userId);
         return res.status(operationsCodes.getResponseCode(response.code)).json(response);
