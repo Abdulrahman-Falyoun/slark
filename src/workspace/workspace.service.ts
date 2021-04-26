@@ -1,6 +1,4 @@
 import {Injectable} from '@nestjs/common';
-import {CreateWorkspaceDto} from './dto/create-workspace.dto';
-import {UpdateWorkspaceDto} from './dto/update-workspace.dto';
 import {InjectModel} from "@nestjs/mongoose";
 import {Workspace} from "./entities/workspace.entity";
 import {ClientSession, Model, QueryOptions, UpdateQuery} from "mongoose";
@@ -23,6 +21,7 @@ export class WorkspaceService {
         private roleService: RoleService
     ) {
     }
+
 
     async createWorkspace(user: User, name) {
         const workspace = new this.workspaceModel({

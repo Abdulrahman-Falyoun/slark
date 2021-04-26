@@ -6,10 +6,19 @@ import {CreateUserDto} from './dtos/create-user.dto';
 import {UpdateUserDto} from './dtos/update-user.dto';
 import {PaginationQueryDto} from './dtos/pagination-query.dto';
 import * as bcrypt from 'bcrypt';
+import {operationsCodes} from "../utils/operation-codes";
+import {RoleService} from "../role/role.service";
+import {NORMAL_USER} from "../utils/system-roles";
+import {AuthenticationService} from "../authentication/authentication.service";
+import {mailService} from "../services/mail.service";
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(USER_SCHEMA_NAME) private readonly userModel?: Model<User>) {
+    constructor(
+        @InjectModel(USER_SCHEMA_NAME) private readonly userModel: Model<User>,
+        private roleService: RoleService,
+        private authenticationService: AuthenticationService
+    ) {
     }
 
     public async findAll(
@@ -23,13 +32,47 @@ export class UserService {
             .exec();
     }
 
-    async create(createUserDto: CreateUserDto): Promise<User> {
+    async create(createUserDto: CreateUserDto) {
         const hash = await bcrypt.hash(createUserDto.password, 10);
-        const createdUser = new this.userModel({...createUserDto, password: hash});
-        const savedUser = await createdUser.save();
-        savedUser['password'] = undefined;
-        savedUser['__v'] = undefined;
-        return savedUser;
+        const userRole = await this.roleService.createNewRole(NORMAL_USER);
+        if (!userRole) {
+            return {
+                code: operationsCodes.FAILED,
+                message:
+                    "Could not grant a role, kindly contact us to solve this problem",
+            };
+        }
+       try {
+           const createdUser = new this.userModel({
+               ...createUserDto,
+               password: hash,
+               _roles: [userRole],
+           });
+           const savedUser = await createdUser.save();
+           savedUser['password'] = undefined;
+           savedUser['__v'] = undefined;
+
+           const token = await this.authenticationService.generateAccessToken({
+               id: savedUser.id,
+               email: savedUser.email,
+           });
+           return await mailService.sendEmailNodeMailer(
+               savedUser,
+               token,
+               {
+                   from: "no-reply@slark.com",
+                   to: savedUser.email,
+                   subject: "Account Verification Link",
+                   text: "and easy to do anywhere, even with Node.js",
+                   html: `<pre>Hello ${savedUser.name}\n\nPlease verify your account by clicking the link:\n<a href="https://slark-backend.herokuapp.com/account/verify/${savedUser.email}/${token}" target="_blank">Confirm email</a>\n\nThank You!\n</pre>`,
+               });
+       } catch (e) {
+           console.log("createNewUser [user.service.ts] e: ", e);
+           return {
+               code: operationsCodes.DATABASE_ERROR,
+               error: e.messagee || e,
+           };
+       }
     }
 
     public async findOne(userId?: string, email?: string): Promise<User> {
