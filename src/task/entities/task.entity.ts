@@ -11,6 +11,7 @@ export class Task extends Document {
     @Prop({unique: true}) name: string;
     @Prop() createdAt: Date;
     @Prop() description: string;
+    @Prop() comments: string[];
     @Prop({type: [{type: Types.ObjectId, ref: SLARK_TASK}]}) _subtasks: Task[];
     @Prop({type: [{type: Types.ObjectId, ref: SLARK_USER}]}) _assignedUsers: User[];
     @Prop({type: Types.ObjectId, ref: SLARK_LIST}) _list: List;

@@ -4,10 +4,12 @@ import {TaskController} from './task.controller';
 import {MongooseModule} from "@nestjs/mongoose";
 import {TASK_SCHEMA_NAME, TaskSchema} from "./entities/task.entity";
 import {SLARK_TASK} from "../utils/schema-names";
+import {ListModule} from "../list/list.module";
 
 @Module({
     imports: [
         MongooseModule.forFeature([{name: SLARK_TASK, schema: TaskSchema}]),
+        ListModule
     ],
     controllers: [TaskController],
     providers: [TaskService]
