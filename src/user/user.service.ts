@@ -72,6 +72,6 @@ export class UserService {
     public async remove(userId: string): Promise<any> {
         return this.userModel.findByIdAndRemove(
             userId,
-        );
+        ).select({name: 1, email: 1});
     }
 }

@@ -4,6 +4,10 @@ import {ConfigModule} from './config/config.module';
 import {MailModule} from './mail/mail.module';
 import {AuthenticationModule} from './authentication/authentication.module';
 import {UserModule} from './user/user.module';
+import {WorkspaceModule} from './workspace/workspace.module';
+import {SpaceModule} from './space/space.module';
+import {ListModule} from './list/list.module';
+import {TaskModule} from './task/task.module';
 
 @Module({
     imports: [
@@ -12,6 +16,10 @@ import {UserModule} from './user/user.module';
         MailModule,
         AuthenticationModule,
         UserModule,
+        WorkspaceModule,
+        SpaceModule,
+        ListModule,
+        TaskModule,
     ],
 
 })
