@@ -9,5 +9,5 @@ export class CreateListDto {
 
     @IsString()
     @IsNotEmpty()
-    readonly space: Schema.Types.ObjectId;
+    readonly _space: Schema.Types.ObjectId;
 }

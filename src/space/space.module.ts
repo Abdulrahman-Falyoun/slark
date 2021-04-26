@@ -13,6 +13,7 @@ import {SLARK_SPACE} from "../utils/schema-names";
     providers: [SpaceService],
     exports: [
         MongooseModule.forFeature([{name: SLARK_SPACE, schema: SpaceSchema}]),
+        SpaceService
     ]
 })
 export class SpaceModule {
