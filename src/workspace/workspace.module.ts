@@ -10,9 +10,7 @@ import {WORKSPACE_SCHEMA_NAME, WorkspaceSchema} from "./entities/workspace.entit
     ],
     controllers: [WorkspaceController],
     providers: [WorkspaceService],
-    exports: [
-        MongooseModule.forFeature([{name: WORKSPACE_SCHEMA_NAME, schema: WorkspaceSchema}]),
-    ],
+
 })
 export class WorkspaceModule {
 }

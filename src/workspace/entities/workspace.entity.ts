@@ -1,8 +1,9 @@
-import {Prop, SchemaFactory} from "@nestjs/mongoose";
+import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {Document, Types} from "mongoose";
 import {User, USER_SCHEMA_NAME} from "../../user/entities/user";
 import {Space} from "../../space/entities/space.entity";
 
+@Schema()
 export class Workspace extends Document {
     @Prop({unique: true}) name: string;
     @Prop() createdAt: Date;

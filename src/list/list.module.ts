@@ -10,9 +10,6 @@ import {LIST_SCHEMA_NAME, ListSchema} from "./entities/list.entity";
     ],
     controllers: [ListController],
     providers: [ListService],
-    exports: [
-        MongooseModule.forFeature([{name: LIST_SCHEMA_NAME, schema: ListSchema}]),
-    ]
 })
 export class ListModule {
 }
