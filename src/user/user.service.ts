@@ -3,8 +3,6 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Model, QueryOptions} from 'mongoose';
 import {User} from './entities/user';
 import {CreateUserDto} from './dtos/create-user.dto';
-import {UpdateUserDto} from './dtos/update-user.dto';
-import {PaginationQueryDto} from './dtos/pagination-query.dto';
 import * as bcrypt from 'bcrypt';
 import {operationsCodes} from "../utils/operation-codes";
 import {RoleService} from "../role/role.service";
@@ -13,6 +11,7 @@ import {AuthenticationService} from "../authentication/authentication.service";
 import {mailService} from "../services/mail.service";
 import {SLARK_USER} from "../utils/schema-names";
 import {WorkspaceService} from "../workspace/workspace.service";
+import {UserUtilsService} from "./user-utils.service";
 
 @Injectable()
 export class UserService {
@@ -20,20 +19,11 @@ export class UserService {
         @InjectModel(SLARK_USER) private readonly userModel: Model<User>,
         private roleService: RoleService,
         private authenticationService: AuthenticationService,
-        private workspaceService: WorkspaceService
+        private workspaceService: WorkspaceService,
+        private userUtilsService: UserUtilsService
     ) {
     }
 
-    public async findAll(
-        paginationQuery: PaginationQueryDto,
-    ): Promise<User[]> {
-        const {limit, offset} = paginationQuery;
-        return await this.userModel
-            .find()
-            .skip(offset)
-            .limit(limit)
-            .exec();
-    }
 
     async create(createUserDto: CreateUserDto) {
         const hash = await bcrypt.hash(createUserDto.password, 10);
@@ -100,27 +90,55 @@ export class UserService {
         return user;
     }
 
-    public async update(
-        userId: string,
-        updateUserDto: UpdateUserDto,
-    ): Promise<User> {
-        const existingUser = await this.userModel.findByIdAndUpdate(
-            {_id: userId},
-            updateUserDto,
-        );
+    async deleteUser({ email, password }: { email: string; password: string }) {
+        try {
+            if (!email || !password) {
+                return {
+                    code: operationsCodes.MISSING_DATA,
+                    message: `You should provide valid credentials, received email: ${email}, password: ${password}`,
+                };
+            }
 
-        if (!existingUser) {
-            throw new NotFoundException(`User #${userId} not found`);
+            const user = await this.userUtilsService.getUserByEmail(email);
+
+            if (!user) {
+                return {
+                    code: operationsCodes.FAILED,
+                    message: `There's no account associated with ${email}, please sign up`,
+                };
+            }
+
+            const passwordIsValid = bcrypt.compareSync(
+                password.toString(),
+                user.password
+            );
+            if (!passwordIsValid) {
+                console.log("Password don't match");
+                return {
+                    message: "Password don't match",
+                    email: email,
+                    password: password,
+                    code: operationsCodes.AUTHORIZATION_FAILED,
+                };
+            }
+            await user.deleteOne();
+
+            return {
+                message: `User associated with ${email} got deleted successfully`,
+                code: operationsCodes.SUCCESS,
+            };
+        } catch (e) {
+            console.log("error in deleting user [user.service.ts]: ", e.message || e);
+            return {
+                message: "Could not remove user, kindly try a bit later",
+                email,
+                password,
+                code: operationsCodes.DATABASE_ERROR,
+            };
         }
-
-        return existingUser;
     }
 
-    public async remove(userId: string): Promise<any> {
-        return this.userModel.findByIdAndRemove(
-            userId,
-        ).select({name: 1, email: 1});
-    }
+
 
 
     async updateUser(id, updateDoc, opts?: QueryOptions) {
@@ -146,7 +164,7 @@ export class UserService {
         if (!workspaceId) {
             return {
                 code: operationsCodes.MISSING_DATA,
-                message: "Please provide a valid workspace ID: recieved " + workspaceId,
+                message: "Please provide a valid workspace ID: received " + workspaceId,
             };
         }
 
