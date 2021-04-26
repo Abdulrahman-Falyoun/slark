@@ -1,35 +1,17 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe} from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
-import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import {Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, Req} from '@nestjs/common';
+import {WorkspaceService} from './workspace.service';
+import {CreateWorkspaceDto} from './dto/create-workspace.dto';
+import {UpdateWorkspaceDto} from './dto/update-workspace.dto';
 
 @Controller('workspace')
 export class WorkspaceController {
-  constructor(private readonly workspaceService: WorkspaceService) {}
+    constructor(private readonly workspaceService: WorkspaceService) {
+    }
 
-  @Post()
-  @UsePipes(ValidationPipe)
-  create(@Body() createWorkspaceDto: CreateWorkspaceDto) {
-    return this.workspaceService.create(createWorkspaceDto);
-  }
+    @Post()
+    @UsePipes(ValidationPipe)
+    create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
+        return this.workspaceService.createWorkspace(req.user, createWorkspaceDto);
+    }
 
-  @Get()
-  findAll() {
-    return this.workspaceService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.workspaceService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWorkspaceDto: UpdateWorkspaceDto) {
-    return this.workspaceService.update(+id, updateWorkspaceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.workspaceService.remove(+id);
-  }
 }

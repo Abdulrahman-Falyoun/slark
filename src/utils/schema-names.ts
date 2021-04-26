@@ -1,4 +1,9 @@
-
-
-export const SLARK_TASKS = 'sl_tasks';
-export const SLARK_LISTS = 'sl_lists';
+export const SLARK_TEAM = "sl_team";
+export const SLARK_TASK = "sl_task";
+export const SLARK_PROJECT = "sl_project";
+export const SLARK_USER = "sl_user";
+export const SLARK_COLUMN = "sl_column";
+export const SLARK_ROLE = "sl_role";
+export const SLARK_WORKSPACE = 'sl_workspace';
+export const SLARK_SPACE = 'sl_space';
+export const SLARK_LIST = 'sl_list';

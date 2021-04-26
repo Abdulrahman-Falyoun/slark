@@ -4,12 +4,12 @@ import {UpdateTaskDto} from './dto/update-task.dto';
 import {InjectModel} from "@nestjs/mongoose";
 import {Task} from "./entities/task.entity";
 import {Model} from "mongoose";
-import {SLARK_TASKS} from "../utils/schema-names";
+import {SLARK_TASK} from "../utils/schema-names";
 
 @Injectable()
 export class TaskService {
     // @ts-ignore
-    constructor(@InjectModel(SLARK_TASKS) private readonly taskModel: Model<Task>) {
+    constructor(@InjectModel(SLARK_TASK) private readonly taskModel: Model<Task>) {
     }
 
 

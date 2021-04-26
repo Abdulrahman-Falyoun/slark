@@ -19,7 +19,7 @@ export class AuthenticationService {
         // return null;
     }
 
-    generateAccessToken(user: User) {
+    generateAccessToken(user: User | { email: string, id: string }) {
         return this.jwtService.sign({email: user.email, id: user.id});
     }
 }

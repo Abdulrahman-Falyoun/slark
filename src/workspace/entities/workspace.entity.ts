@@ -7,9 +7,8 @@ import {Space} from "../../space/entities/space.entity";
 export class Workspace extends Document {
     @Prop({unique: true}) name: string;
     @Prop() createdAt: Date;
-    @Prop({type: [{type: Types.ObjectId, ref: USER_SCHEMA_NAME}]}) users: User[];
-    @Prop({type: [{type: Types.ObjectId, ref: 'space'}]}) spaces: Space[];
+    @Prop({type: [{type: Types.ObjectId, ref: USER_SCHEMA_NAME}]}) _users: User[];
+    @Prop({type: [{type: Types.ObjectId, ref: 'space'}]}) _spaces: Space[];
 }
 
 export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);
-export const WORKSPACE_SCHEMA_NAME = 'workspace';

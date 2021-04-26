@@ -2,12 +2,13 @@ import {Injectable} from '@nestjs/common';
 import {CreateListDto} from './dto/create-list.dto';
 import {UpdateListDto} from './dto/update-list.dto';
 import {InjectModel} from "@nestjs/mongoose";
-import {List, LIST_SCHEMA_NAME} from "./entities/list.entity";
+import {List} from "./entities/list.entity";
 import {Model} from "mongoose";
+import {SLARK_LIST} from "../utils/schema-names";
 
 @Injectable()
 export class ListService {
-    constructor(@InjectModel(LIST_SCHEMA_NAME) private readonly listModel: Model<List>) {
+    constructor(@InjectModel(SLARK_LIST) private readonly listModel: Model<List>) {
     }
 
     create(createListDto: CreateListDto) {

@@ -8,6 +8,7 @@ import {WorkspaceModule} from './workspace/workspace.module';
 import {SpaceModule} from './space/space.module';
 import {ListModule} from './list/list.module';
 import {TaskModule} from './task/task.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import {TaskModule} from './task/task.module';
         SpaceModule,
         ListModule,
         TaskModule,
+        RoleModule,
     ],
 
 })
