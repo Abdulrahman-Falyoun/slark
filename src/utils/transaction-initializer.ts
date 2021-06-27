@@ -1,35 +1,20 @@
-import {Model} from "mongoose";
-import {operationsCodes} from "./operation-codes";
+import { Model } from 'mongoose';
 
-interface transactionHOF extends Function {
-    (args?: any): Promise<any> | any;
-}
-
-export const wrapFunctionWithinTransaction = async (
-    model: Model<any>,
-    func: transactionHOF,
-    successData?,
-    errorData?
+export const withTransaction = async (
+  model: Model<any>,
+  foo: (args?: any) => Promise<any> | any,
 ) => {
-    const session = await model.startSession();
-    session.startTransaction();
-    try {
-        await func(session);
-        // Closing transaction
-        await session.commitTransaction();
-        return {
-            ...successData,
-            code: operationsCodes.SUCCESS,
-        };
-    } catch (e) {
-        console.log('e [transaction-initializer]: ', (e.message || e));
-        await session.abortTransaction();
-        return {
-            code: operationsCodes.DATABASE_ERROR,
-            ...errorData,
-            e
-        };
-    } finally {
-        session.endSession();
-    }
+  const session = await model.startSession();
+  session.startTransaction();
+  try {
+    const response = await foo(session);
+    await session.commitTransaction();
+    return response;
+  } catch (e) {
+    console.log('e [transaction-initializer]: ', e.message || e);
+    await session.abortTransaction();
+    throw e;
+  } finally {
+    session.endSession();
+  }
 };
