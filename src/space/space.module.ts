@@ -12,7 +12,6 @@ import {SLARK_SPACE} from "../utils/schema-names";
     controllers: [SpaceController],
     providers: [SpaceService],
     exports: [
-        MongooseModule.forFeature([{name: SLARK_SPACE, schema: SpaceSchema}]),
         SpaceService
     ]
 })
