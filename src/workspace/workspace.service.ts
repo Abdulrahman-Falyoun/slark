@@ -9,7 +9,6 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { SLARK_WORKSPACE } from '../utils/schema-names';
-import { operationsCodes } from '../utils/operation-codes';
 import { User } from '../user/entities/user';
 import { withTransaction } from '../utils/transaction-initializer';
 import { MongoError } from 'mongodb';
@@ -96,12 +95,6 @@ export class WorkspaceService {
     userEmail: string,
   ) {
     const user = await this.userUtilsService.getUserByEmail(userEmail);
-    if (!user) {
-      return {
-        code: operationsCodes.UN_COMPLETE,
-        message: `User with email ${userEmail} does not exist, please make sure he signed up`,
-      };
-    }
     const token = await this.authenticationService.generateAccessToken({
       id: user.id,
       email: user.email,
@@ -121,15 +114,9 @@ export class WorkspaceService {
                     </a>\n\nThank You!\n
                     </pre>`,
       });
-
-      return {
-        message: 'An invitation sent to ' + user.email,
-        code: operationsCodes.SUCCESS,
-      };
     } catch (e) {
       console.log('Error [workspace.service.ts]: ', e.message || e);
       return {
-        code: operationsCodes.DATABASE_ERROR,
         message: 'Could not send an invitation',
         error: e.message || e,
       };
@@ -137,7 +124,7 @@ export class WorkspaceService {
   }
 
   async addUserToWorkspace(workspaceId, email) {
-    const user: User = await this.userUtilsService.getUserByEmail(email, false);
+    const user: User = await this.userUtilsService.getUserByEmail(email);
     return await withTransaction(this.workspaceModel, async (session) => {
       await this.userUtilsService.updateOne(
         { email: email },
@@ -153,22 +140,15 @@ export class WorkspaceService {
   }
 
   async removeUserFromWorkspace(admin: User, workspaceId, userId) {
-    if (!userId) {
-      return {
-        message: 'Missing data, required(userId) but received -> ' + userId,
-        code: operationsCodes.MISSING_DATA,
-      };
-    }
     const hasRole = await this.roleService.hasRoleOverTarget(
       admin,
       workspaceId,
       WORKSPACE_OWNER,
     );
     if (!hasRole) {
-      return {
-        code: operationsCodes.AUTHORIZATION_FAILED,
-        message: `You dont have owner permission over ${workspaceId} workspace`,
-      };
+      throw new Error(
+        `You dont have owner permission over ${workspaceId} workspace`,
+      );
     }
     return await withTransaction(this.workspaceModel, async (session) => {
       await this.updateOne(

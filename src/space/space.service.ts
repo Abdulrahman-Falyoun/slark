@@ -96,9 +96,6 @@ export class SpaceService {
     return await this.spaceModel
       .findOne(filterQuery)
       .select({ __v: 0, name: 0, _id: 0, _workspace: 0 })
-      .populate('_users', { __v: 0 })
-      .populate('_tasks', { __v: 0 })
-      .populate('_columns', { __v: 0 })
       .then((r) => {
         if (!r) {
           throw new NotFoundException({
