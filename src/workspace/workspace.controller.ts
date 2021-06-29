@@ -30,10 +30,10 @@ export class WorkspaceController {
     );
   }
 
-  @Delete()
+  @Delete('/:id')
   @UseGuards(JwtAuthGuard)
-  removeWorkspace(@Req() req, @Res() res) {
-    return this.workspaceService.removeWorkspace(req?.body?.id, req.user);
+  removeWorkspace(@Param('id') id: string, @Req() req) {
+    return this.workspaceService.removeWorkspace(id, req.user);
   }
 
   @Get('/:id')

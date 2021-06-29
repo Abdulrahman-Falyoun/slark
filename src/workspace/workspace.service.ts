@@ -70,22 +70,34 @@ export class WorkspaceService {
   }
 
   async removeWorkspace(id: string, user: User) {
-    // const hasRole = this.roleService.hasRoleOverTarget(
-    //   user,
-    //   id,
-    //   WORKSPACE_OWNER,
-    // );
-    // if (!hasRole) {
-    //   return {
-    //     code: operationsCodes.AUTHORIZATION_FAILED,
-    //     message: 'You dont have right roles to execute this operation',
-    //   };
-    // }
-    const p = await this.findOne({
+    const hasRole = this.roleService.hasRoleOverTarget(
+      user,
+      id,
+      WORKSPACE_OWNER,
+    );
+    if (!hasRole) {
+      throw new Error('You dont have right roles to execute this operation');
+    }
+    const w = await this.findOne({
       _id: id,
     });
-    // await this.workspaceModel.deleteOne({ _id: id });
-    await p.deleteOne();
+    return await withTransaction(this.workspaceModel, async (session) => {
+      // user._workspaces = user._workspaces.filter((_w) => _w._id !== id);
+      // await user.save({ session });
+      await this.userUtilsService.updateMany(
+        {
+          _workspaces: {
+            $elemMatch: w._id,
+          },
+        },
+        {
+          $pull: {
+            _workspaces: [id],
+          },
+        },
+      );
+      await w.deleteOne({ session });
+    });
   }
 
   async inviteUserToWorkspace(

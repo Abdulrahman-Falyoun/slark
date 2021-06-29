@@ -45,9 +45,9 @@ export class UserUtilsService {
     return this.userModel.updateOne(filterQuery, updateQuery, queryOptions);
   }
 
-  updateMany<T>(
-    filterQuery: FilterQuery<T>,
-    updateQuery: UpdateQuery<T>,
+  updateMany(
+    filterQuery: FilterQuery<User>,
+    updateQuery: UpdateQuery<User>,
     queryOptions?: QueryOptions,
   ) {
     return this.userModel.updateMany(filterQuery, updateQuery, queryOptions);
