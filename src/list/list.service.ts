@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { List } from './entities/list.entity';
+import { List } from './list.model';
 import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
 import { SLARK_LIST } from '../utils/schema-names';
 // import { SpaceService } from '../space/space.service';
@@ -26,6 +26,7 @@ export class ListService {
       //   },
       //   { session },
       // );
+
     });
   }
 

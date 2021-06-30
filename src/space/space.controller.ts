@@ -9,44 +9,59 @@ import {
   Req,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
+import { WorkspaceService } from '../workspace/workspace.service';
 
 @Controller('spaces')
 @UseGuards(JwtAuthGuard)
 export class SpaceController {
-  constructor(private readonly spaceService: SpaceService) {}
+  constructor(
+    private readonly spaceService: SpaceService,
+    private workspaceService: WorkspaceService,
+  ) {}
 
   @Post()
-  create(@Res() res, @Req() req, @Body() createSpaceDto: CreateSpaceDto) {
+  create(@Req() req, @Body() createSpaceDto: CreateSpaceDto) {
     return this.spaceService.createSpace(req.user.id, createSpaceDto);
   }
 
-  @Delete()
-  removeSpace(@Res() res, @Req() req) {
-    return this.spaceService.deleteSpace(
-      req.user,
-      req?.body?.id,
-      req?.body?.workspaceId,
-    );
+  @Delete(':id')
+  removeSpace(
+    @Req() req,
+    @Param('id') id: string,
+    @Query('workspace') workspaceId: string,
+  ) {
+    return this.spaceService.deleteSpace(req.user, id, workspaceId);
   }
 
-  @Put()
-  updateSpace(@Res() res, @Req() req) {
-    return this.spaceService.updateSpaceByAdmin(
-      req?.body?.id,
-      req?.body?.workspaceId,
-      req.user,
+  @Put(':id')
+  async updateSpace(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateSpaceDto: any,
+  ) {
+    let w;
+    if ('_workspace' in updateSpaceDto) {
+      w = await this.workspaceService.findOne({
+        _id: updateSpaceDto._workspace,
+      });
+    }
+    return this.spaceService.updateSpace(
       {
-        $set: req?.body?.data,
+        _id: id,
+      },
+      {
+        $set: w ? { ...updateSpaceDto, _workspace: w._id } : updateSpaceDto,
       },
     );
   }
 
-  @Get('/:id')
-  getSpaceDetails(@Res() res, @Param('id') id: string) {
+  @Get(':id')
+  getSpaceDetails(@Param('id') id: string) {
     return this.spaceService.findOne({ _id: id });
   }
 }

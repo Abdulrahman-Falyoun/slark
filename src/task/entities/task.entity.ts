@@ -1,7 +1,7 @@
 import {Document, Types} from "mongoose";
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {UserModel} from "../../user/user.model";
-import {List} from "../../list/entities/list.entity";
+import {List} from "../../list/list.model";
 import {SLARK_LIST, SLARK_TASK, SLARK_USER} from "../../utils/schema-names";
 
 export const TASK_SCHEMA_NAME = 'task';
