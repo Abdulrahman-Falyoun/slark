@@ -12,8 +12,7 @@ import { MongoError } from 'mongodb';
 @Injectable()
 export class ListService {
   constructor(
-    @InjectModel(SLARK_LIST) private readonly listModel: Model<List>,
-    // private spaceService: SpaceService,
+    @InjectModel(SLARK_LIST) private readonly listModel: Model<List>, // private spaceService: SpaceService,
   ) {}
 
   async addList(list: CreateListDto) {
@@ -28,6 +27,21 @@ export class ListService {
       //   { session },
       // );
     });
+  }
+
+  async mongooseUpdate(
+    filterQuery: FilterQuery<List>,
+    updateQuery: UpdateQuery<List>,
+    opts?: QueryOptions,
+  ) {
+    const p = await this.findList(filterQuery);
+    const res = await p.updateOne(updateQuery, opts);
+    if (res.nModified < 1) {
+      throw new MongoError({
+        message: `Could not update task`,
+      });
+    }
+    return this.findList(filterQuery);
   }
 
   async updateList(

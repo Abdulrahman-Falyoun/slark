@@ -27,8 +27,8 @@ export class TaskService {
         const t: Task = await taskInstance.save({ session });
 
         // Updating list
-        await this.listService.updateList(
-          t._list,
+        await this.listService.mongooseUpdate(
+          { _id: t._list },
           { $push: { _tasks: t } },
           { session },
         );

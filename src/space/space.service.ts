@@ -2,14 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { SLARK_SPACE } from '../utils/schema-names';
-import { Space } from './entities/space.entity';
+import { Space } from './space.model';
 import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { UserService } from '../user/user.service';
 import { UserUtilsService } from '../user/user-utils.service';
 import { WORKSPACE_OWNER } from '../utils/system-roles';
 import { RoleService } from '../role/role.service';
-import { User } from '../user/entities/user';
+import { UserModel } from '../user/user.model';
 import { withTransaction } from '../utils/transaction-initializer';
 import { MongoError } from 'mongodb';
 @Injectable()
@@ -48,7 +48,7 @@ export class SpaceService {
     });
   }
 
-  async deleteSpace(user: User, id: string, workspaceId: string) {
+  async deleteSpace(user: UserModel, id: string, workspaceId: string) {
     const hasRole = this.roleService.hasRoleOverTarget(
       user,
       workspaceId,
@@ -75,7 +75,7 @@ export class SpaceService {
   async updateSpaceByAdmin(
     id,
     workspaceId: string,
-    user: User,
+    user: UserModel,
     updateQuery: UpdateQuery<this>,
     queryOptions?: QueryOptions,
   ) {

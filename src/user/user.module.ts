@@ -2,7 +2,7 @@ import {Global, Module} from '@nestjs/common';
 import {UserService} from './user.service';
 import {UserController} from './user.controller';
 import {MongooseModule} from '@nestjs/mongoose';
-import {UserSchema} from './entities/user';
+import {UserSchema} from './user.model';
 import {AccountModule} from './account/account.module';
 import {UserUtilsService} from "./user-utils.service";
 import {SLARK_USER} from "../utils/schema-names";

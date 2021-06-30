@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {JwtService} from "@nestjs/jwt";
-import {User} from "../user/entities/user";
+import {UserModel} from "../user/user.model";
 
 
 @Injectable()
@@ -19,7 +19,7 @@ export class AuthenticationService {
         // return null;
     }
 
-    generateAccessToken(user: User | { email: string, id: string }) {
+    generateAccessToken(user: UserModel | { email: string, id: string }) {
         return this.jwtService.sign({email: user.email, id: user.id});
     }
 }

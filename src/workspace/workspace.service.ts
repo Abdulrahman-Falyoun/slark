@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Workspace } from './entities/workspace.entity';
+import { Workspace } from './workspace.model';
 import {
   ClientSession,
   FilterQuery,
@@ -9,7 +9,7 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { SLARK_WORKSPACE } from '../utils/schema-names';
-import { User } from '../user/entities/user';
+import { UserModel } from '../user/user.model';
 import { withTransaction } from '../utils/transaction-initializer';
 import { MongoError } from 'mongodb';
 
@@ -29,7 +29,7 @@ export class WorkspaceService {
     private roleService: RoleService,
   ) {}
 
-  async createWorkspace(user: User, name) {
+  async createWorkspace(user: UserModel, name) {
     const workspace = new this.workspaceModel({
       name,
       _users: [user],
@@ -69,7 +69,7 @@ export class WorkspaceService {
     return this.workspaceModel.find(filterQuery);
   }
 
-  async removeWorkspace(id: string, user: User) {
+  async removeWorkspace(id: string, user: UserModel) {
     const hasRole = this.roleService.hasRoleOverTarget(
       user,
       id,
@@ -101,7 +101,7 @@ export class WorkspaceService {
   }
 
   async inviteUserToWorkspace(
-    sender: User,
+    sender: UserModel,
     workspaceName: string,
     workspaceId: string,
     userEmail: string,
@@ -136,7 +136,7 @@ export class WorkspaceService {
   }
 
   async addUserToWorkspace(workspaceId, email) {
-    const user: User = await this.userUtilsService.getUserByEmail(email);
+    const user: UserModel = await this.userUtilsService.getUserByEmail(email);
     return await withTransaction(this.workspaceModel, async (session) => {
       await this.userUtilsService.updateOne(
         { email: email },
@@ -151,7 +151,7 @@ export class WorkspaceService {
     });
   }
 
-  async removeUserFromWorkspace(admin: User, workspaceId, userId) {
+  async removeUserFromWorkspace(admin: UserModel, workspaceId, userId) {
     const hasRole = await this.roleService.hasRoleOverTarget(
       admin,
       workspaceId,

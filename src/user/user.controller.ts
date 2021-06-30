@@ -10,7 +10,7 @@ import {
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 
-@Controller('user')
+@Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private userService: UserService) {}

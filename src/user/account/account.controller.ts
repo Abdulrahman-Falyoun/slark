@@ -13,19 +13,19 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { FileHandler } from '../../utils/file-system-handler';
 
-@Controller('account')
+@Controller('accounts')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Post('/signup')
   @UsePipes(ValidationPipe)
-  signup(@Res() res, @Body() signUpDto: SignupDto) {
+  signup(@Body() signUpDto: SignupDto) {
     return this.accountService.signup(signUpDto);
   }
 
   @Post('/login')
   @UsePipes(ValidationPipe)
-  login(@Res() res, @Body() loginDto: LoginDto) {
+  login(@Body() loginDto: LoginDto) {
     return this.accountService.login(loginDto);
   }
 

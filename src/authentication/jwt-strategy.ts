@@ -20,9 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { email: string; id: string; expiresIn: any }) {
-    const user = await this.userService.findOne(payload.id);
+    const user = await this.userService.findOne({
+      _id: payload.id,
+    });
     if (!user) {
-      throw new HttpException('User does not exist', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('UserModel does not exist', HttpStatus.UNAUTHORIZED);
     }
     return user;
   }

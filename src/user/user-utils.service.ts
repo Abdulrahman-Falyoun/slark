@@ -1,6 +1,6 @@
 import { FilterQuery, UpdateQuery, QueryOptions, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './entities/user';
+import { UserModel } from './user.model';
 import { Injectable } from '@nestjs/common';
 import { SLARK_USER } from '../utils/schema-names';
 import { MongoError } from 'mongodb';
@@ -8,7 +8,7 @@ import { MongoError } from 'mongodb';
 @Injectable()
 export class UserUtilsService {
   constructor(
-    @InjectModel(SLARK_USER) private readonly userModel?: Model<User>,
+    @InjectModel(SLARK_USER) private readonly userModel?: Model<UserModel>,
   ) {}
 
   async getUserById(id) {
@@ -46,8 +46,8 @@ export class UserUtilsService {
   }
 
   updateMany(
-    filterQuery: FilterQuery<User>,
-    updateQuery: UpdateQuery<User>,
+    filterQuery: FilterQuery<UserModel>,
+    updateQuery: UpdateQuery<UserModel>,
     queryOptions?: QueryOptions,
   ) {
     return this.userModel.updateMany(filterQuery, updateQuery, queryOptions);

@@ -1,11 +1,11 @@
 import {Schema, Prop, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Types} from 'mongoose';
-import {Workspace} from "../../workspace/entities/workspace.entity";
-import {SLARK_ROLE, SLARK_WORKSPACE} from "../../utils/schema-names";
-import {Role} from "../../role/entities/role.entity";
+import {Workspace} from "../workspace/workspace.model";
+import {SLARK_ROLE, SLARK_WORKSPACE} from "../utils/schema-names";
+import {Role} from "../role/entities/role.entity";
 
 @Schema()
-export class User extends Document {
+export class UserModel extends Document {
     @Prop({unique: true}) name: string;
     @Prop({unique: true}) email: string;
     @Prop() password: string;
@@ -19,4 +19,4 @@ export class User extends Document {
     _roles: Role[];
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(UserModel);

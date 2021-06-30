@@ -14,7 +14,7 @@ import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 
-@Controller('space')
+@Controller('spaces')
 @UseGuards(JwtAuthGuard)
 export class SpaceController {
   constructor(private readonly spaceService: SpaceService) {}
@@ -47,6 +47,6 @@ export class SpaceController {
 
   @Get('/:id')
   getSpaceDetails(@Res() res, @Param('id') id: string) {
-    return this.spaceService.getSpaceDetails(id);
+    return this.spaceService.findOne({ _id: id });
   }
 }

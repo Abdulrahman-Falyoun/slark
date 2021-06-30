@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {User} from "../user/entities/user";
+import {UserModel} from "../user/user.model";
 import {Model, SaveOptions} from "mongoose";
 import {InjectModel} from "@nestjs/mongoose";
 import {SLARK_ROLE} from "../utils/schema-names";
@@ -10,7 +10,7 @@ export class RoleService {
     constructor(@InjectModel(SLARK_ROLE) private readonly roleModel: Model<Role>) {
     }
 
-    public hasRoleOverTarget(user: User, targetId: string, roleType: { name: string, number: number }): boolean {
+    public hasRoleOverTarget(user: UserModel, targetId: string, roleType: { name: string, number: number }): boolean {
         const roles = user._roles;
         return roles.some(role => role.targetId === targetId && role.name === roleType.name && +role.number === +roleType.number);
     }
