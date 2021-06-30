@@ -6,6 +6,7 @@ import {
   FilterQuery,
   Model,
   QueryOptions,
+  Types,
   UpdateQuery,
 } from 'mongoose';
 import { SLARK_WORKSPACE } from '../utils/schema-names';
@@ -136,6 +137,14 @@ export class WorkspaceService {
     }
   }
 
+  async getAllUsersInWorkspace(workspaceId) {
+    const w = await this.findOne({ _id: workspaceId });
+    return this.userService.findAll({
+      _workspaces: {
+        $eq: w._id,
+      },
+    });
+  }
   async addUserToWorkspace(workspaceId, email) {
     const user: UserModel = await this.userService.findOne({ email });
     const w = await this.findOne({

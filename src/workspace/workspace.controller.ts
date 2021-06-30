@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
@@ -64,7 +65,10 @@ export class WorkspaceController {
     console.log({ workspaceId, email, token });
     return this.workspaceService.addUserToWorkspace(workspaceId, email);
   }
-
+  @Get('/all-users')
+  public getAllUsersInWorkspace(@Query('workspace') id: string) {
+    return this.workspaceService.getAllUsersInWorkspace(id);
+  }
   @Delete('/:id')
   @UseGuards(JwtAuthGuard)
   removeWorkspace(@Param('id') id: string, @Req() req) {

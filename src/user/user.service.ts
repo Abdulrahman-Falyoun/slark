@@ -146,21 +146,7 @@ export class UserService {
   ) {
     return this.userModel.updateMany(filterQuery, updateQuery, opts);
   }
-  async getAllInWorkspace(workspaceId) {
-    const p = await this.workspaceService.findOne({
-      _id: workspaceId,
-    });
-    if (!p) {
-      return {
-        message: `Workspace with id: ${workspaceId} does not exist`,
-      };
-    }
-    const users: Array<UserModel> = await this.userModel
-      .find({ _workspaces: { $elemMatch: p._id } })
-      .select({ name: 1, email: 1 });
-    return {
-      users,
-      message: 'Retrieving users is done',
-    };
+  async findAll(filterQuery?: FilterQuery<UserModel>) {
+    return this.userModel.find(filterQuery);
   }
 }

@@ -1,8 +1,6 @@
 import {
   Controller,
   Delete,
-  Get,
-  Param,
   Req,
   Res,
   UseGuards,
@@ -17,10 +15,5 @@ export class UserController {
   @Delete()
   deleteUser(@Req() req, @Res() res) {
     return this.userService.deleteUser(req.body);
-  }
-
-  @Get('/in-workspace/:id/all')
-  public getAllUsersInWorkspace(@Param('id') id: string, @Res() res) {
-    return this.userService.getAllInWorkspace(id);
   }
 }
