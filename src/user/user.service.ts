@@ -78,35 +78,10 @@ export class UserService {
       });
   }
 
-  async deleteUser({ email, password }: { email: string; password: string }) {
-    try {
-      const user = await this.findOne({ email });
-
-      const passwordIsValid = bcrypt.compareSync(
-        password.toString(),
-        user.password,
-      );
-      if (!passwordIsValid) {
-        console.log("Password don't match");
-        return {
-          message: "Password don't match",
-          email: email,
-          password: password,
-        };
-      }
-      await user.deleteOne();
-
-      return {
-        message: `User associated with ${email} got deleted successfully`,
-      };
-    } catch (e) {
-      console.log('error in deleting user [user.service.ts]: ', e.message || e);
-      return {
-        message: 'Could not remove user, kindly try a bit later',
-        email,
-        password,
-      };
-    }
+  async deleteUser(id: string) {
+    const user = await this.findOne({ _id: id });
+    await user.deleteOne();
+    return user;
   }
 
   async updateUser(
