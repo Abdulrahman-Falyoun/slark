@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, QueryOptions } from 'mongoose';
+import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
 import { UserModel } from './user.model';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -10,8 +10,8 @@ import { AuthenticationService } from '../authentication/authentication.service'
 import { mailService } from '../services/mail.service';
 import { SLARK_USER } from '../utils/schema-names';
 import { WorkspaceService } from '../workspace/workspace.service';
-import { UserUtilsService } from './user-utils.service';
 import { withTransaction } from '../utils/transaction-initializer';
+import { MongoError } from 'mongodb';
 
 @Injectable()
 export class UserService {
@@ -20,7 +20,6 @@ export class UserService {
     private roleService: RoleService,
     private authenticationService: AuthenticationService,
     private workspaceService: WorkspaceService,
-    private userUtilsService: UserUtilsService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -67,12 +66,21 @@ export class UserService {
     return this.userModel
       .findOne(filterQuery)
       .populate('_roles')
-      .populate('_workspaces');
+      .populate('_workspaces')
+      .then((u) => {
+        if (!u) {
+          throw new MongoError({
+            message: `User not found`,
+            error: `User not found`,
+          });
+        }
+        return u;
+      });
   }
 
   async deleteUser({ email, password }: { email: string; password: string }) {
     try {
-      const user = await this.userUtilsService.getUserByEmail(email);
+      const user = await this.findOne({ email });
 
       const passwordIsValid = bcrypt.compareSync(
         password.toString(),
@@ -101,25 +109,43 @@ export class UserService {
     }
   }
 
-  async updateUser(id, updateDoc, opts?: QueryOptions) {
+  async updateUser(
+    filterQuery: FilterQuery<UserModel>,
+    updateDoc,
+    opts?: QueryOptions,
+  ) {
     return await this.userModel
-      .updateOne({ _id: id }, { $set: updateDoc }, opts)
+      .updateOne(filterQuery, { $set: updateDoc }, opts)
       .then((updateResponse) => updateResponse)
       .catch((updateUserDBError) => {
         console.log('updateUserDBError confirmEmail: ', updateUserDBError);
         return null;
       });
   }
-  async updateUseByRef(user, updatedDoc) {
-    user
-      .updateOne({ _id: user.db.id }, { $set: updatedDoc })
-      .then((updateResponse) => updateResponse)
-      .catch((updateUserDBError) => {
-        console.log('updateUserDBError confirmEmail: ', updateUserDBError);
-        return null;
+  async mongooseUpdate(
+    filterQuery: FilterQuery<UserModel>,
+    updateQuery: UpdateQuery<UserModel>,
+    opts?: QueryOptions,
+  ) {
+    return await this.userModel
+      .updateOne(filterQuery, updateQuery, opts)
+      .then((updateResponse) => {
+        if (updateResponse.nModified < 1) {
+          throw new MongoError({
+            message: `User not updated`,
+            error: `User not updated`,
+          });
+        }
+        return updateResponse;
       });
   }
-
+  async updateMultipleUsers(
+    filterQuery: FilterQuery<UserModel>,
+    updateQuery: UpdateQuery<UserModel>,
+    opts?: QueryOptions,
+  ) {
+    return this.userModel.updateMany(filterQuery, updateQuery, opts);
+  }
   async getAllInWorkspace(workspaceId) {
     const p = await this.workspaceService.findOne({
       _id: workspaceId,

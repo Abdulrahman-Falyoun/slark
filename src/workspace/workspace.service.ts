@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Workspace } from './workspace.model';
 import {
@@ -13,20 +13,21 @@ import { UserModel } from '../user/user.model';
 import { withTransaction } from '../utils/transaction-initializer';
 import { MongoError } from 'mongodb';
 
-import { UserUtilsService } from '../user/user-utils.service';
 import { WORKSPACE_OWNER } from '../utils/system-roles';
 import { mailService } from '../services/mail.service';
 import { RoleService } from '../role/role.service';
 import { AuthenticationService } from '../authentication/authentication.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class WorkspaceService {
   constructor(
     @InjectModel(SLARK_WORKSPACE)
     private readonly workspaceModel: Model<Workspace>,
-    private userUtilsService: UserUtilsService,
     private authenticationService: AuthenticationService,
     private roleService: RoleService,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
   ) {}
 
   async createWorkspace(user: UserModel, name) {
@@ -38,7 +39,6 @@ export class WorkspaceService {
           _users: [user],
         });
         const iworkspace = await workspace.save({ session });
-        console.log({ iworkspace });
         const role = await this.roleService.createNewRole(
           {
             ...WORKSPACE_OWNER,
@@ -84,10 +84,10 @@ export class WorkspaceService {
     return await withTransaction(this.workspaceModel, async (session) => {
       // user._workspaces = user._workspaces.filter((_w) => _w._id !== id);
       // await user.save({ session });
-      await this.userUtilsService.updateMany(
+      await this.userService.updateMultipleUsers(
         {
           _workspaces: {
-            $elemMatch: w._id,
+            $elemMatch: w,
           },
         },
         {
@@ -97,6 +97,7 @@ export class WorkspaceService {
         },
       );
       await w.deleteOne({ session });
+      return w;
     });
   }
 
@@ -106,7 +107,7 @@ export class WorkspaceService {
     workspaceId: string,
     userEmail: string,
   ) {
-    const user = await this.userUtilsService.getUserByEmail(userEmail);
+    const user = await this.userService.findOne({ email: userEmail });
     const token = await this.authenticationService.generateAccessToken({
       id: user.id,
       email: user.email,
@@ -118,13 +119,13 @@ export class WorkspaceService {
         subject: 'Workspace invitation',
         text: 'workspace invitation',
         html: `
-                    <pre>
-                        Hello ${user.name}\n\n
-                        ${sender.name} Sent you an invitation request to join ${workspaceName} workspace:\n
-                    <a href="http://localhost:3000/workspace/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
-                        Accept invitation
-                    </a>\n\nThank You!\n
-                    </pre>`,
+        <pre>
+          Hello ${user.name}\n\n
+          ${sender.name} Sent you an invitation request to join ${workspaceName} workspace:\n
+      <a href="http://localhost:3000/workspaces/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
+          Accept invitation
+      </a>\n\nThank You!\n
+      </pre>`,
       });
     } catch (e) {
       console.log('Error [workspace.service.ts]: ', e.message || e);
@@ -136,19 +137,30 @@ export class WorkspaceService {
   }
 
   async addUserToWorkspace(workspaceId, email) {
-    const user: UserModel = await this.userUtilsService.getUserByEmail(email);
-    return await withTransaction(this.workspaceModel, async (session) => {
-      await this.userUtilsService.updateOne(
-        { email: email },
-        { $push: { _workspaces: workspaceId } },
-        { session },
-      );
-      await this.updateOne(
-        { _id: workspaceId },
-        { $push: { _users: user.id } },
-        { session },
-      );
+    const user: UserModel = await this.userService.findOne({ email });
+    const w = await this.findOne({
+      _id: workspaceId,
     });
+
+    if (user._workspaces) {
+      const alreadyExisted =
+        user._workspaces.filter((r) => r._id.toString() === w._id.toString())
+          .length > 0;
+      if (alreadyExisted) {
+        throw new MongoError({
+          error: `User already in workspace`,
+        });
+      }
+    }
+    user._workspaces.push(w);
+    await user.save();
+    // await this.userService.mongooseUpdate(
+    //   { email },
+    //   { $push: { _workspaces: workspaceId } },
+    // );
+    return {
+      user: await this.userService.findOne({ email }),
+    };
   }
 
   async removeUserFromWorkspace(admin: UserModel, workspaceId, userId) {
@@ -162,18 +174,13 @@ export class WorkspaceService {
         `You dont have owner permission over ${workspaceId} workspace`,
       );
     }
-    return await withTransaction(this.workspaceModel, async (session) => {
-      await this.updateOne(
-        { _id: workspaceId },
-        { $pull: { _users: userId } },
-        { session },
-      );
-      await this.userUtilsService.updateOne(
-        { _id: userId },
-        { $pull: { _workspaces: workspaceId } },
-        { session },
-      );
-    });
+
+    await this.userService.mongooseUpdate(
+      { _id: userId },
+      { $pull: { _workspaces: workspaceId } },
+    );
+
+    return this.userService.findOne({ _id: userId });
   }
 
   async updateOne(

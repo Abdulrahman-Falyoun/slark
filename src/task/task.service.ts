@@ -6,8 +6,8 @@ import { ClientSession, FilterQuery, Model } from 'mongoose';
 import { SLARK_TASK } from '../utils/schema-names';
 import { withTransaction } from '../utils/transaction-initializer';
 import { ListService } from '../list/list.service';
-import { UserUtilsService } from '../user/user-utils.service';
 import { MongoError } from 'mongodb';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TaskService {
@@ -15,7 +15,7 @@ export class TaskService {
     // @ts-ignore
     @InjectModel(SLARK_TASK) private readonly taskModel: Model<Task>,
     private listService: ListService,
-    private userUtilsService: UserUtilsService,
+    private userService: UserService,
   ) {}
 
   async createTask(task: CreateTaskDto) {
@@ -50,7 +50,7 @@ export class TaskService {
           let usersMustBeAssignedThisTask = newAssignUsers.filter(
             (item) => oldAssignedUsers.indexOf(item) < 0,
           );
-          await this.userUtilsService.updateMany(
+          await this.userService.updateMultipleUsers(
             { _id: usersMustBeAssignedThisTask },
             { $push: { _tasks: task._id } },
             { session },
@@ -58,7 +58,7 @@ export class TaskService {
           let usersShouldBeOmittedFromAssignUsersToThisTask = oldAssignedUsers.filter(
             (item) => newAssignUsers.indexOf(item) < 0,
           );
-          await this.userUtilsService.updateMany(
+          await this.userService.updateMultipleUsers(
             { _id: usersShouldBeOmittedFromAssignUsersToThisTask },
             { $pullAll: { _tasks: [task._id] } },
             { session },

@@ -6,7 +6,6 @@ import { Space } from './space.model';
 import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { UserService } from '../user/user.service';
-import { UserUtilsService } from '../user/user-utils.service';
 import { WORKSPACE_OWNER } from '../utils/system-roles';
 import { RoleService } from '../role/role.service';
 import { UserModel } from '../user/user.model';
@@ -18,7 +17,6 @@ export class SpaceService {
     @InjectModel(SLARK_SPACE) private readonly spaceModel: Model<Space>,
     private workspaceService: WorkspaceService,
     private userService: UserService,
-    private userUtilsService: UserUtilsService,
     private roleService: RoleService,
   ) {}
 
@@ -39,7 +37,7 @@ export class SpaceService {
         { session },
       );
       await this.userService.updateUser(
-        uid,
+        { _id: uid },
         {
           $push: { _spaces: s },
         },

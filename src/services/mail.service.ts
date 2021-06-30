@@ -6,10 +6,6 @@ import { TransportOptions } from 'nodemailer';
 class MailService {
   async sendEmailNodeMailer(user, token, mailOptions) {
     // create reusable transporter object using the default SMTP transport
-    console.log({
-      user: process.env.GMAIL_ACCOUNT,
-      pass: process.env.GMAIL_PASSWORD,
-    });
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       type: 'SMTP',

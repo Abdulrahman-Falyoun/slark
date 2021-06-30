@@ -21,17 +21,17 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  createTask(@Res() res, @Body() createTaskDto: CreateTaskDto) {
+  createTask(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.createTask(createTaskDto);
   }
 
   @Delete('/:id')
-  deleteTask(@Res() res, @Param('id') id: string) {
+  deleteTask(@Param('id') id: string) {
     return this.taskService.deleteTask(id);
   }
 
   @Put('/:id')
-  updateTask(@Res() res, @Req() req, @Param('id') id: string) {
+  updateTask(@Req() req, @Param('id') id: string) {
     return this.taskService.updateTask(id, req.body);
   }
 }

@@ -4,7 +4,6 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { UserUtilsService } from '../user-utils.service';
 import { mailService } from '../../services/mail.service';
 
 @Injectable()
@@ -12,7 +11,6 @@ export class AccountService {
   constructor(
     private userService: UserService,
     private authenticationService: AuthenticationService,
-    private userUtilsService: UserUtilsService,
   ) {}
 
   signup(signUpDto: SignupDto) {
@@ -39,7 +37,7 @@ export class AccountService {
         message: `Missing data => email: ${email}`,
       };
     }
-    const user = await this.userUtilsService.getUserByEmail(email);
+    const user = await this.userService.findOne({ email });
     if (!user) {
       return {
         message:
@@ -71,7 +69,7 @@ export class AccountService {
       };
     }
 
-    const user = await this.userUtilsService.getUserByEmail(email);
+    const user = await this.userService.findOne({ email });
     if (!user) {
       return {
         message:
@@ -86,8 +84,8 @@ export class AccountService {
 
     user.password = undefined;
 
-    return await this.userUtilsService
-      .updateOne({ _id: user['_id'] }, { $set: { verified: true } })
+    return await this.userService
+      .updateUser({ _id: user['_id'] }, { verified: true })
       .then((updateResponse) => {
         return {
           message:

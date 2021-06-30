@@ -24,28 +24,16 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
-    console.log(req.user)
+    console.log(req.user);
     return this.workspaceService.createWorkspace(
       req.user,
       createWorkspaceDto.name,
     );
   }
 
-  @Delete('/:id')
-  @UseGuards(JwtAuthGuard)
-  removeWorkspace(@Param('id') id: string, @Req() req) {
-    return this.workspaceService.removeWorkspace(id, req.user);
-  }
-
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard)
-  getWorkspaceDetails(@Param('id') id: string, @Res() res) {
-    return this.workspaceService.findOne({ _id: id });
-  }
-
   @Post('/invite-user')
   @UseGuards(JwtAuthGuard)
-  inviteUserToWorkspace(@Req() req, @Res() res) {
+  inviteUserToWorkspace(@Req() req) {
     return this.workspaceService.inviteUserToWorkspace(
       req.user,
       req.body.workspaceName,
@@ -56,11 +44,14 @@ export class WorkspaceController {
 
   @Delete('/remove-user')
   @UseGuards(JwtAuthGuard)
-  removeUserFromWorkspace(@Req() req, @Res() res) {
+  removeUserFromWorkspace(
+    @Req() req,
+    @Body() { workspaceId, userId }: { workspaceId: string; userId: string },
+  ) {
     return this.workspaceService.removeUserFromWorkspace(
       req.user,
-      req.body.workspaceId,
-      req.body.userId,
+      workspaceId,
+      userId,
     );
   }
 
@@ -69,8 +60,20 @@ export class WorkspaceController {
     @Param('workspaceId') workspaceId: string,
     @Param('email') email: string,
     @Param('token') token: string,
-    @Res() res,
   ) {
+    console.log({ workspaceId, email, token });
     return this.workspaceService.addUserToWorkspace(workspaceId, email);
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  removeWorkspace(@Param('id') id: string, @Req() req) {
+    return this.workspaceService.removeWorkspace(id, req.user);
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  getWorkspaceDetails(@Param('id') id: string) {
+    return this.workspaceService.findOne({ _id: id });
   }
 }
