@@ -30,15 +30,15 @@ export class WorkspaceService {
   ) {}
 
   async createWorkspace(user: UserModel, name) {
-    const workspace = new this.workspaceModel({
-      name,
-      _users: [user],
-    });
-
     return await withTransaction(
       this.workspaceModel,
       async (session: ClientSession) => {
+        const workspace = new this.workspaceModel({
+          name,
+          _users: [user],
+        });
         const iworkspace = await workspace.save({ session });
+        console.log({ iworkspace });
         const role = await this.roleService.createNewRole(
           {
             ...WORKSPACE_OWNER,

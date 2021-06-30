@@ -8,8 +8,8 @@ import { SLARK_USER } from '../utils/schema-names';
 })
 export class Workspace extends Document {
   @Prop() name: string;
-  @Prop({ type: [{ type: Types.ObjectId, ref: SLARK_USER }] })
-  _users: UserModel[];
+  // @Prop({ type: [{ type: Types.ObjectId, ref: SLARK_USER }] })
+  // _users: UserModel[];
 }
 
 export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);

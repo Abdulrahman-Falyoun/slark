@@ -24,6 +24,7 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
+    console.log(req.user)
     return this.workspaceService.createWorkspace(
       req.user,
       createWorkspaceDto.name,

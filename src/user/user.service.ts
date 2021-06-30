@@ -121,36 +121,20 @@ export class UserService {
   }
 
   async getAllInWorkspace(workspaceId) {
-    if (!workspaceId) {
+    const p = await this.workspaceService.findOne({
+      _id: workspaceId,
+    });
+    if (!p) {
       return {
-        message: 'Please provide a valid workspace ID: received ' + workspaceId,
+        message: `Workspace with id: ${workspaceId} does not exist`,
       };
     }
-
-    try {
-      const p = await this.workspaceService.findOne({
-        _id: workspaceId,
-      });
-      if (!p) {
-        return {
-          message: `Workspace with id: ${workspaceId} does not exist`,
-        };
-      }
-
-      const users: Array<UserModel> = await this.userModel
-        .find({ _id: { $in: p._users } })
-        .select({ name: 1, email: 1 });
-
-      return {
-        users,
-        message: 'Retrieving users is done',
-      };
-    } catch (e) {
-      console.log('ERROR [user.service.ts]: ', e.message || e);
-      return {
-        message: 'Retrieving users has failed',
-        e,
-      };
-    }
+    const users: Array<UserModel> = await this.userModel
+      .find({ _workspaces: { $elemMatch: p._id } })
+      .select({ name: 1, email: 1 });
+    return {
+      users,
+      message: 'Retrieving users is done',
+    };
   }
 }
