@@ -25,7 +25,6 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
-    console.log(req.user);
     return this.workspaceService.createWorkspace(
       req.user,
       createWorkspaceDto.name,
@@ -62,7 +61,6 @@ export class WorkspaceController {
     @Param('email') email: string,
     @Param('token') token: string,
   ) {
-    console.log({ workspaceId, email, token });
     return this.workspaceService.addUserToWorkspace(workspaceId, email);
   }
   @Get('/all-users')
