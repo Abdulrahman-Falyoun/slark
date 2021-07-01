@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Workspace } from '../workspace/workspace.model';
-import { List } from '../list/list.model';
-import { SLARK_LIST, SLARK_WORKSPACE } from '../utils/schema-names';
+import { SLARK_WORKSPACE } from '../utils/schema-names';
 
 @Schema({
   timestamps: true,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Task } from './entities/task.entity';
+import { Task } from './task.model';
 import { ClientSession, FilterQuery, Model } from 'mongoose';
 import { SLARK_TASK } from '../utils/schema-names';
 import { withTransaction } from '../utils/transaction-initializer';
