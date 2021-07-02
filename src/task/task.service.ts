@@ -1,43 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Task } from './task.model';
-import { ClientSession, FilterQuery, Model } from 'mongoose';
+import { TaskModel } from './task.model';
+import { ClientSession, FilterQuery, Model, Types } from 'mongoose';
 import { SLARK_TASK } from '../utils/schema-names';
 import { withTransaction } from '../utils/transaction-initializer';
 import { ListService } from '../list/list.service';
 import { MongoError } from 'mongodb';
 import { UserService } from '../user/user.service';
+import { FileUploadService } from '../../libs/file-upload/src';
+import { GetAllTasksDto } from './dto/get-all-tasks.dto';
 
 @Injectable()
 export class TaskService {
   constructor(
     // @ts-ignore
-    @InjectModel(SLARK_TASK) private readonly taskModel: Model<Task>,
+    @InjectModel(SLARK_TASK) private readonly taskModel: Model<TaskModel>,
     private listService: ListService,
     private userService: UserService,
+    private fileUploadService: FileUploadService,
   ) {}
 
-  async createTask(task: CreateTaskDto) {
-    const taskInstance = new this.taskModel(task);
-    return await withTransaction(
-      this.taskModel,
-      async (session: ClientSession) => {
-        // Creating new task
-        const t: Task = await taskInstance.save({ session });
+  async createTask(createTaskDto: CreateTaskDto) {
+    let l;
+    let assets = [];
+    if (createTaskDto._list) {
+      l = await this.listService.findList({
+        _id: createTaskDto._list,
+      });
+    }
 
-        // Updating list
-        await this.listService.mongooseUpdate(
-          { _id: t._list },
-          { $push: { _tasks: t } },
-          { session },
+    if (createTaskDto.assets) {
+      for (let asset of createTaskDto.assets) {
+        assets.push(
+          await this.fileUploadService.getFile({
+            _id: asset,
+          }),
         );
-      },
-    );
+      }
+    }
+    console.log(assets);
+    createTaskDto.assets = assets;
+    createTaskDto._list = l._id;
+    const taskInstance = new this.taskModel(createTaskDto);
+    const itask = await taskInstance.save();
+    return itask.populate('assets').populate('_list');
   }
 
   async updateTask(taskId, updatedData) {
-    const task: Task = await this.findOne({ _id: taskId });
+    const task = await this.findOne({ _id: taskId });
     return await withTransaction(
       this.taskModel,
       async (session: ClientSession) => {
@@ -73,18 +84,38 @@ export class TaskService {
     );
   }
 
-  async findOne(filterQuery: FilterQuery<Task>) {
-    return await this.taskModel.findOne(filterQuery).then((r) => {
-      if (!r) {
-        throw new MongoError({
-          message: `Task not found`,
-        });
-      }
-      return r;
-    });
+  async findAll(getAllTasksDto: GetAllTasksDto) {
+    let filterQuery: FilterQuery<TaskModel> = {};
+    if (getAllTasksDto.listId) {
+      const list = await this.listService.findList({
+        _id: getAllTasksDto.listId,
+      });
+      filterQuery._list = {
+        $eq: list._id,
+      };
+    }
+    return this.taskModel
+      .find(filterQuery)
+      .populate('assets')
+      .populate('_list');
   }
-  async deleteTask(taskId) {
-    const task: Task = await this.findOne({ _id: taskId });
+  async findOne(filterQuery: FilterQuery<TaskModel>) {
+    return await this.taskModel
+      .findOne(filterQuery)
+      .populate('assets')
+      .populate('_list')
+      .then((r) => {
+        if (!r) {
+          throw new MongoError({
+            message: `Task not found`,
+          });
+        }
+        return r;
+      });
+  }
+  async deleteTask(filterQuery: FilterQuery<TaskModel>) {
+    const task = await this.findOne(filterQuery);
     await task.deleteOne();
+    return task;
   }
 }

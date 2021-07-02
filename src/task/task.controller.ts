@@ -10,14 +10,17 @@ import {
   Res,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { GetAllTasksDto } from './dto/get-all-tasks.dto';
 
-@ApiTags("Task")
-@Controller('task')
+@ApiTags('Task')
+@Controller('tasks')
 @UseGuards(JwtAuthGuard)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -29,11 +32,25 @@ export class TaskController {
 
   @Delete('/:id')
   deleteTask(@Param('id') id: string) {
-    return this.taskService.deleteTask(id);
+    return this.taskService.deleteTask({
+      _id: id,
+    });
   }
 
   @Put('/:id')
-  updateTask(@Req() req, @Param('id') id: string) {
-    return this.taskService.updateTask(id, req.body);
+  updateTask(@Body() updateTaskDto: UpdateTaskDto, @Param('id') id: string) {
+    return this.taskService.updateTask(id, updateTaskDto);
+  }
+
+  @Get(':id')
+  getTask(@Param('id') id: string) {
+    return this.taskService.findOne({
+      _id: id,
+    });
+  }
+
+  @Get()
+  getAllTasks(@Query() query: GetAllTasksDto) {
+    return this.taskService.findAll(query);
   }
 }

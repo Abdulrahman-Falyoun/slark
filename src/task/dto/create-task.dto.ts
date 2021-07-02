@@ -1,13 +1,38 @@
-import {IsNotEmpty, IsString, MaxLength} from "class-validator";
-import {Schema} from "mongoose";
+import {
+  IsMongoId,
+  IsNotEmpty, IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateTaskDto {
-    @IsString()
-    @MaxLength(30)
-    @IsNotEmpty()
-    readonly name: string;
+  @IsString()
+  @MaxLength(30)
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsNotEmpty()
-    readonly _list: Schema.Types.ObjectId;
+  @IsMongoId()
+  _list: string;
+
+  @IsMongoId({ each: true })
+  assets: string[];
+  @IsMongoId({ each: true })
+  _subtasks: string[];
+
+  @IsString({
+    each: true,
+  })
+  @IsOptional()
+  description?: string;
+
+  @IsString({
+    each: true,
+  })
+  @IsOptional()
+  comments?: string;
+
+  @IsNumber()
+  @IsOptional()
+  priority?: number;
 }

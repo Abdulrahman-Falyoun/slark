@@ -1,6 +1,7 @@
-import { IsMongoId } from 'class-validator';
+import { IsMongoId, IsOptional } from 'class-validator';
 
 export class GetAllWorkspacesForUserDto {
   @IsMongoId()
-  userId: string;
+  @IsOptional()
+  userId?: string;
 }

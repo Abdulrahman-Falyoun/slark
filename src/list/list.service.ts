@@ -88,6 +88,7 @@ export class ListService {
         if (!p) {
           throw new MongoError({
             message: `List not found`,
+            error: `List not found`
           });
         }
         return p;
