@@ -28,11 +28,11 @@ export class FileUploadService {
         message: e.message || e,
       });
     }
-    const port = this.configService.get<number>('port');
+    const baseUrl = this.configService.get<number>('baseUrl');
     const metadata = await getImageDimensions(file.path);
     createdFile = await this.fileModel.create({
-      url: `http://localhost:${port}/images/${file.filename}`,
-      thumbnail: `http://localhost:${port}/images/thumbnails/${file.filename}`,
+      url: `${baseUrl}/images/${file.filename}`,
+      thumbnail: `${baseUrl}/images/thumbnails/${file.filename}`,
       name: file.filename,
       originalName: file.originalname,
       mimetype: file.mimetype,

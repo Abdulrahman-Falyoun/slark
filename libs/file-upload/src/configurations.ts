@@ -1,7 +1,7 @@
-
 export interface EnvironmentVariables {
   port: number;
   db: DBConfig;
+  baseUrl: string;
 }
 
 export interface DBConfig {
@@ -9,10 +9,11 @@ export interface DBConfig {
   replicaSet: string;
 }
 
-export default () :  EnvironmentVariables => ({
+export default (): EnvironmentVariables => ({
   port: +process.env.PORT,
+  baseUrl: process.env.BASE_URL,
   db: {
     url: process.env.DATABASE_URL,
     replicaSet: process.env.REPLICA_SET,
-  }
-})
+  },
+});
