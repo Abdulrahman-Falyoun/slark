@@ -47,7 +47,11 @@ console.log({ ENV });
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../', 'public'),
-      serveRoot: '/',
+      // serveRoot: '/',
+      // renderPath: "/",
+      serveStaticOptions: {
+        index: false,
+      },
     }),
     DatabaseModule,
     FileUploadModule,
