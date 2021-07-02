@@ -1,19 +1,17 @@
-import {Module} from '@nestjs/common';
-import {SpaceService} from './space.service';
-import {SpaceController} from './space.controller';
-import {MongooseModule} from "@nestjs/mongoose";
-import {SpaceSchema} from "./space.model";
-import {SLARK_SPACE} from "../utils/schema-names";
+import { Global, Module } from '@nestjs/common';
+import { SpaceService } from './space.service';
+import { SpaceController } from './space.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SpaceSchema } from './space.model';
+import { SLARK_SPACE } from '../utils/schema-names';
 
+@Global()
 @Module({
-    imports: [
-        MongooseModule.forFeature([{name: SLARK_SPACE, schema: SpaceSchema}]),
-    ],
-    controllers: [SpaceController],
-    providers: [SpaceService],
-    exports: [
-        SpaceService
-    ]
+  imports: [
+    MongooseModule.forFeature([{ name: SLARK_SPACE, schema: SpaceSchema }]),
+  ],
+  controllers: [SpaceController],
+  providers: [SpaceService],
+  exports: [SpaceService],
 })
-export class SpaceModule {
-}
+export class SpaceModule {}

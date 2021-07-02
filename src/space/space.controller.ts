@@ -10,6 +10,8 @@ import {
   UseGuards,
   Put,
   Query,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { SpaceService } from './space.service';
 import { CreateSpaceDto } from './dto/create-space.dto';
@@ -22,6 +24,7 @@ import { GetAllSpacesDto } from './dto/get-all-spaces.dto';
 export class SpaceController {
   constructor(
     private readonly spaceService: SpaceService,
+    @Inject(forwardRef(() => WorkspaceService))
     private workspaceService: WorkspaceService,
   ) {}
 

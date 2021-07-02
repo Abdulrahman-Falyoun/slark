@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { SLARK_SPACE } from '../utils/schema-names';
@@ -16,6 +16,7 @@ import { GetAllSpacesDto } from './dto/get-all-spaces.dto';
 export class SpaceService {
   constructor(
     @InjectModel(SLARK_SPACE) private readonly spaceModel: Model<SpaceModel>,
+    @Inject(forwardRef(() => WorkspaceService))
     private workspaceService: WorkspaceService,
     private userService: UserService,
     private roleService: RoleService,

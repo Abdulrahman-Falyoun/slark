@@ -21,6 +21,7 @@ import { AuthenticationService } from '../authentication/authentication.service'
 import { UserService } from '../user/user.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { FileUploadService } from '../../libs/file-upload/src';
+import { SpaceService } from '../space/space.service';
 
 @Injectable()
 export class WorkspaceService {
@@ -32,6 +33,8 @@ export class WorkspaceService {
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
     private fileUploadService: FileUploadService,
+    @Inject(forwardRef(() => SpaceService))
+    private spaceService: SpaceService,
   ) {}
 
   async createWorkspace(
