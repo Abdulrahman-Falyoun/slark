@@ -11,6 +11,7 @@ import { RoleService } from '../role/role.service';
 import { UserModel } from '../user/user.model';
 import { withTransaction } from '../utils/transaction-initializer';
 import { MongoError } from 'mongodb';
+import { GetAllSpacesDto } from './dto/get-all-spaces.dto';
 @Injectable()
 export class SpaceService {
   constructor(
@@ -47,6 +48,18 @@ export class SpaceService {
     });
   }
 
+  async findAll(query?: GetAllSpacesDto) {
+    let filterQuery: FilterQuery<SpaceModel> = {};
+    if (query.workspaceId) {
+      const w = await this.workspaceService.findOne({
+        _id: query.workspaceId,
+      });
+      filterQuery._workspace = {
+        $eq: w._id,
+      };
+    }
+    return this.spaceModel.find(filterQuery);
+  }
   async findOne(filterQuery: FilterQuery<SpaceModel>) {
     return await this.spaceModel
       .findOne(filterQuery)

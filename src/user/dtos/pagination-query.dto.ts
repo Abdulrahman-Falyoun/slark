@@ -11,5 +11,5 @@ export class PaginationQueryDto {
 
   @IsOptional()
   @IsString()
-  sort: string;
+  sort?: string;
 }

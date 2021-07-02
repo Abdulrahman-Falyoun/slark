@@ -57,7 +57,7 @@ export class WorkspaceService {
         user._roles.push(role);
         user._workspaces.push(iworkspace);
         await user.save({ session });
-        return iworkspace;
+        return iworkspace.populate('image');
       },
     );
   }
