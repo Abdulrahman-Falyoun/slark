@@ -27,7 +27,7 @@ export class WorkspaceController {
   create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
     return this.workspaceService.createWorkspace(
       req.user,
-      createWorkspaceDto.name,
+      createWorkspaceDto,
     );
   }
 

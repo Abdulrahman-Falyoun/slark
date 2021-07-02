@@ -19,6 +19,8 @@ import { mailService } from '../services/mail.service';
 import { RoleService } from '../role/role.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { UserService } from '../user/user.service';
+import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { FileUploadService } from '../../libs/file-upload/src';
 
 @Injectable()
 export class WorkspaceService {
@@ -29,16 +31,21 @@ export class WorkspaceService {
     private roleService: RoleService,
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
+    private fileUploadService: FileUploadService,
   ) {}
 
-  async createWorkspace(user: UserModel, name) {
+  async createWorkspace(
+    user: UserModel,
+    createWorkspaceDto: CreateWorkspaceDto,
+  ) {
     return await withTransaction(
       this.workspaceModel,
       async (session: ClientSession) => {
-        const workspace = new this.workspaceModel({
-          name,
-          _users: [user],
+        const image = await this.fileUploadService.getFile({
+          _id: createWorkspaceDto.image,
         });
+        createWorkspaceDto.image = image._id;
+        const workspace = new this.workspaceModel(createWorkspaceDto);
         const iworkspace = await workspace.save({ session });
         const role = await this.roleService.createNewRole(
           {
@@ -56,18 +63,21 @@ export class WorkspaceService {
   }
 
   async findOne(filterQuery: FilterQuery<Workspace>) {
-    return await this.workspaceModel.findOne(filterQuery).then((r) => {
-      if (!r) {
-        throw new MongoError({
-          msg: `Workspace not found`,
-        });
-      }
-      return r;
-    });
+    return await this.workspaceModel
+      .findOne(filterQuery)
+      .populate('image')
+      .then((r) => {
+        if (!r) {
+          throw new MongoError({
+            msg: `Workspace not found`,
+          });
+        }
+        return r;
+      });
   }
 
   findAll(filterQuery: FilterQuery<Workspace>) {
-    return this.workspaceModel.find(filterQuery);
+    return this.workspaceModel.find(filterQuery).populate('image');
   }
 
   async removeWorkspace(id: string, user: UserModel) {
@@ -163,10 +173,6 @@ export class WorkspaceService {
     }
     user._workspaces.push(w);
     await user.save();
-    // await this.userService.mongooseUpdate(
-    //   { email },
-    //   { $push: { _workspaces: workspaceId } },
-    // );
     return {
       user: await this.userService.findOne({ email }),
     };

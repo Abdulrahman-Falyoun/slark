@@ -1,0 +1,1 @@
+export const pathToUploadedFiles = "public/images";

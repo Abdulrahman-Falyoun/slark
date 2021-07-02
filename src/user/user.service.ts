@@ -19,7 +19,6 @@ export class UserService {
     @InjectModel(SLARK_USER) private readonly userModel: Model<UserModel>,
     private roleService: RoleService,
     private authenticationService: AuthenticationService,
-    private workspaceService: WorkspaceService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {

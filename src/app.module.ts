@@ -11,6 +11,9 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './configuration';
 import { DatabaseModule } from '../libs/database';
 import * as dotenv from 'dotenv';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { FileUploadModule } from '../libs/file-upload/src';
 dotenv.config();
 
 @Controller()
@@ -31,6 +34,7 @@ class globalController {
   }
 }
 
+// console.log('join(__dirname, \'../../../\', \'public/images\'): ', join(__dirname, '../../', 'public/images'))
 const ENV = process.env.NODE_ENV;
 console.log({ ENV });
 @Module({
@@ -41,7 +45,12 @@ console.log({ ENV });
       load: [configuration],
       envFilePath: !ENV ? '.env' : `.env.${ENV}`,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../', 'public'),
+      serveRoot: '/',
+    }),
     DatabaseModule,
+    FileUploadModule,
     AuthenticationModule,
     UserModule,
     WorkspaceModule,
