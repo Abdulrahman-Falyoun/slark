@@ -20,9 +20,9 @@ dotenv.config();
 class globalController {
   @Get()
   async getMainPage(@Req() req, @Res() res) {
-    if (req.headers.host === 'nest-slark.herokuapp.com') {
+    if (req.headers.host === 'api-slark.herokuapp.com') {
       const verificationPage = await FileHandler.readFileAsync(
-        'src/public/pages/landing-page.html',
+        'public/index.html',
       );
       res.writeHead(200, {
         'Content-Type': 'text/html',
