@@ -18,7 +18,9 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { GetAllSpacesDto } from './dto/get-all-spaces.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Space')
 @Controller('spaces')
 @UseGuards(JwtAuthGuard)
 export class SpaceController {

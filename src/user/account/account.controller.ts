@@ -12,7 +12,11 @@ import { AccountService } from './account.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { FileHandler } from '../../utils/file-system-handler';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserModel } from '../user.model';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
+@ApiTags('Account')
 @Controller('accounts')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}

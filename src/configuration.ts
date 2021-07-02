@@ -9,12 +9,22 @@ export interface NodeMailer {
   GMAIL_ACCOUNT: string;
   GMAIL_PASSWORD: string;
 }
+
+export interface SwaggerDocsInterface {
+  title: string;
+  description: string;
+  version: string;
+  tag?: string;
+}
+
 export interface EnvironmentVariables {
   PORT: string;
   JWT_SECRET_KEY: string;
   EXPIRES_IN: string;
   nodeMailer: NodeMailer;
   db: DBConfig;
+  swaggerDocs: SwaggerDocsInterface;
+
 }
 
 export default (): EnvironmentVariables => ({
@@ -31,4 +41,10 @@ export default (): EnvironmentVariables => ({
   },
   JWT_SECRET_KEY: process.env['JWT_SECRET_KEY'],
   EXPIRES_IN: process.env.EXPIRES_IN,
+  swaggerDocs: {
+  title: 'Slark Api',
+    description: 'just an api service (^_^)',
+    version: '1.0',
+    tag: 'nestjs'
+}
 });

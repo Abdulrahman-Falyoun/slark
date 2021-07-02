@@ -17,7 +17,9 @@ import { CreateListDto } from './dto/create-list.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 import { UpdateListDto } from './dto/update-list.dto';
 import { GetListsDto } from './dto/get-lists.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('List')
 @Controller('lists')
 @UseGuards(JwtAuthGuard)
 export class ListController {

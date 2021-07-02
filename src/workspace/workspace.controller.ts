@@ -16,7 +16,9 @@ import {
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspace')
 @Controller('workspaces')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
@@ -25,10 +27,7 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   create(@Req() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
-    return this.workspaceService.createWorkspace(
-      req.user,
-      createWorkspaceDto,
-    );
+    return this.workspaceService.createWorkspace(req.user, createWorkspaceDto);
   }
 
   @Post('/invite-user')

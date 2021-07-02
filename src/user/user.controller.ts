@@ -1,7 +1,9 @@
 import { Controller, Delete, Param, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 import { UserService } from './user.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UserController {
