@@ -66,6 +66,7 @@ export class UserService {
       .findOne(filterQuery)
       .populate('_roles')
       .populate('_workspaces')
+      .populate('avatar')
       .then((u) => {
         if (!u) {
           throw new MongoError({

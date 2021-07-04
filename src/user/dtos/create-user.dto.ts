@@ -1,19 +1,21 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-
+import { IsEmail, IsMongoId, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
   @MaxLength(30)
   @IsNotEmpty()
-  readonly name: string;
+  name: string;
 
   @IsString()
   @IsEmail()
   @IsNotEmpty()
-  readonly email: string;
-
+  email: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly password: string;
+  password: string;
+
+  @IsMongoId()
+  @IsOptional()
+  avatar?: string;
 }

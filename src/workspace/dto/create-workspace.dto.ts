@@ -1,4 +1,10 @@
-import { IsMongoId, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -7,5 +13,6 @@ export class CreateWorkspaceDto {
   readonly name: string;
 
   @IsMongoId()
-  image: string;
+  @IsOptional()
+  image?: string;
 }

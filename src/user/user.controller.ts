@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../authentication/jwt-auth.guard';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -11,5 +11,12 @@ export class UserController {
   @Delete(':id')
   deleteUser(@Req() req, @Param('id') id: string) {
     return this.userService.deleteUser(id);
+  }
+
+  @Get(':id')
+  getUser(@Param('id') id: string) {
+    return this.userService.findOne({
+      _id: id,
+    });
   }
 }
