@@ -122,6 +122,6 @@ export class UserService {
     return this.userModel.updateMany(filterQuery, updateQuery, opts);
   }
   async findAll(filterQuery?: FilterQuery<UserModel>) {
-    return this.userModel.find(filterQuery);
+    return this.userModel.find(filterQuery).populate('avatar');
   }
 }
