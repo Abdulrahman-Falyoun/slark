@@ -7,14 +7,18 @@ class MailService {
   async sendEmailNodeMailer(user, token, mailOptions) {
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      type: 'SMTP',
-      host: 'smtp.gmail.com',
-      // port: 587,
-      secure: true, // true for 465, false for other ports
+      host: 'mail.scandinaviatech.com',
+      secure: true,
+      secureConnection: false, // TLS requires secureConnection to be false
+      // tls: {
+      //   ciphers: "SSLv3",
+      // },
+      // requireTLS: true,
+      port: 465,
+      debug: true,
       auth: {
-        user: process.env.GMAIL_ACCOUNT,
-        pass: process.env.GMAIL_PASSWORD,
+        user: process.env.SCANDINAVIA_ACCOUNT,
+        pass: process.env.SCANDINVIA_PASSWORD,
       },
     } as TransportOptions);
     return await transporter
