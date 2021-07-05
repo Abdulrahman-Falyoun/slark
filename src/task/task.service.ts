@@ -56,30 +56,38 @@ export class TaskService {
           updatedData?._assignedUsers &&
           updatedData?._assignedUsers.length > 0
         ) {
-          const oldAssignedUsers = task._assignedUsers;
-          const newAssignUsers = updatedData?._assignedUsers;
-          let usersMustBeAssignedThisTask = newAssignUsers.filter(
-            (item) => oldAssignedUsers.indexOf(item) < 0,
-          );
-          await this.userService.updateMultipleUsers(
-            { _id: usersMustBeAssignedThisTask },
-            { $push: { _tasks: task._id } },
-            { session },
-          );
-          let usersShouldBeOmittedFromAssignUsersToThisTask = oldAssignedUsers.filter(
-            (item) => newAssignUsers.indexOf(item) < 0,
-          );
-          await this.userService.updateMultipleUsers(
-            { _id: usersShouldBeOmittedFromAssignUsersToThisTask },
-            { $pullAll: { _tasks: [task._id] } },
-            { session },
-          );
+          for (let _u of updatedData._assignedUsers) {
+            await this.userService.findOne({
+              _id: _u,
+            });
+          }
+          // const oldAssignedUsers = task._assignedUsers;
+          // const newAssignUsers = updatedData?._assignedUsers;
+          // let usersMustBeAssignedThisTask = newAssignUsers.filter(
+          //   (item) => oldAssignedUsers.indexOf(item) < 0,
+          // );
+          // await this.userService.updateMultipleUsers(
+          //   { _id: usersMustBeAssignedThisTask },
+          //   { $push: { _tasks: task._id } },
+          //   { session },
+          // );
+          // let usersShouldBeOmittedFromAssignUsersToThisTask = oldAssignedUsers.filter(
+          //   (item) => newAssignUsers.indexOf(item) < 0,
+          // );
+          // await this.userService.updateMultipleUsers(
+          //   { _id: usersShouldBeOmittedFromAssignUsersToThisTask },
+          //   { $pullAll: { _tasks: [task._id] } },
+          //   { session },
+          // );
         }
         await this.taskModel.updateOne(
           { _id: taskId },
           { $set: updatedData },
           { session },
         );
+        return this.findOne({
+          _id: taskId,
+        });
       },
     );
   }
