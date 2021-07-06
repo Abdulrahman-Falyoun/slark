@@ -5,7 +5,18 @@ import { SLARK_FILE, SLARK_ROLE, SLARK_WORKSPACE } from '../utils/schema-names';
 import { Role } from '../role/entities/role.entity';
 import { FileModel } from '../../libs/file-upload/src';
 
-@Schema()
+@Schema({
+  toJSON: {
+    getters: true,
+    virtuals: true,
+    transform: function (doc, ret) {
+      const user = Object.assign({}, ret);
+      delete user.password;
+      delete user.__v;
+      return user;
+    },
+  },
+})
 export class UserModel extends Document {
   @Prop({ unique: true }) name: string;
   @Prop({ unique: true }) email: string;

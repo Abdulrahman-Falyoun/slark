@@ -24,7 +24,9 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     return await withTransaction(this.userModel, async (session) => {
       const hash = await bcrypt.hash(createUserDto.password, 10);
-      const userRole = await this.roleService.createNewRole(NORMAL_USER);
+      const userRole = await this.roleService.createNewRole(NORMAL_USER, {
+        session,
+      });
       if (!userRole) {
         throw new Error(
           'Could not grant a role, kindly contact us to solve this problem',

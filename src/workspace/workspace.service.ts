@@ -48,7 +48,9 @@ export class WorkspaceService {
           _id: createWorkspaceDto.image,
         });
         createWorkspaceDto.image = image._id;
-        const workspace = new this.workspaceModel(createWorkspaceDto);
+        const workspace = new this.workspaceModel(createWorkspaceDto).populate(
+          'image',
+        );
         const iworkspace = await workspace.save({ session });
         const role = await this.roleService.createNewRole(
           {
@@ -60,7 +62,7 @@ export class WorkspaceService {
         user._roles.push(role);
         user._workspaces.push(iworkspace);
         await user.save({ session });
-        return iworkspace.populate('image');
+        return workspace;
       },
     );
   }
@@ -117,10 +119,12 @@ export class WorkspaceService {
 
   async inviteUserToWorkspace(
     sender: UserModel,
-    workspaceName: string,
     workspaceId: string,
     userEmail: string,
   ) {
+    const w = await this.findOne({
+      _id: workspaceId,
+    });
     const user = await this.userService.findOne({ email: userEmail });
     const token = await this.authenticationService.generateAccessToken({
       id: user.id,
@@ -135,12 +139,16 @@ export class WorkspaceService {
         html: `
         <pre>
           Hello ${user.name}\n\n
-          ${sender.name} Sent you an invitation request to join ${workspaceName} workspace:\n
-      <a href="http://localhost:3000/workspaces/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
+          ${sender.name} Sent you an invitation request to join ${w.name} workspace:\n
+      <a href="${process.env.BASE_URL}/workspaces/join-workspace/${workspaceId}/${user.email}/${token}" target="_blank">
           Accept invitation
       </a>\n\nThank You!\n
       </pre>`,
       });
+
+      return {
+        message: `Invitation sent successfully`,
+      };
     } catch (e) {
       console.log('Error [workspace.service.ts]: ', e.message || e);
       return {
@@ -177,11 +185,11 @@ export class WorkspaceService {
     user._workspaces.push(w);
     await user.save();
     return {
-      user: await this.userService.findOne({ email }),
+      message: `We're pleased that you join ${w.name}`,
     };
   }
 
-  async removeUserFromWorkspace(admin: UserModel, workspaceId, userId) {
+  async removeUserFromWorkspace(admin: UserModel, workspaceId, userEmail) {
     const hasRole = await this.roleService.hasRoleOverTarget(
       admin,
       workspaceId,
@@ -194,11 +202,11 @@ export class WorkspaceService {
     }
 
     await this.userService.mongooseUpdate(
-      { _id: userId },
+      { email: userEmail },
       { $pull: { _workspaces: workspaceId } },
     );
 
-    return this.userService.findOne({ _id: userId });
+    return this.userService.findOne({ email: userEmail });
   }
 
   async updateOne(

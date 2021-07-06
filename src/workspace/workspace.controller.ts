@@ -32,12 +32,14 @@ export class WorkspaceController {
 
   @Post('/invite-user')
   @UseGuards(JwtAuthGuard)
-  inviteUserToWorkspace(@Req() req) {
+  inviteUserToWorkspace(
+    @Req() req,
+    @Body() payload: { workspaceId: string; userEmail: string },
+  ) {
     return this.workspaceService.inviteUserToWorkspace(
       req.user,
-      req.body.workspaceName,
-      req.body.workspaceId,
-      req.body.userEmail,
+      payload.workspaceId,
+      payload.userEmail,
     );
   }
 
@@ -45,12 +47,12 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   removeUserFromWorkspace(
     @Req() req,
-    @Body() { workspaceId, userId }: { workspaceId: string; userId: string },
+    @Body() { workspaceId, userEmail }: { workspaceId: string; userEmail: string },
   ) {
     return this.workspaceService.removeUserFromWorkspace(
       req.user,
       workspaceId,
-      userId,
+      userEmail,
     );
   }
 
